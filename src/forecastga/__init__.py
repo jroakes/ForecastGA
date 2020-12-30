@@ -7,9 +7,7 @@ __version__ = "0.1.0"
 
 """ForecastGA: Main"""
 
-""" Inspiration:
-    See ideation.txt for inspiration.
-"""
+
 
 import os
 import warnings

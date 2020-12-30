@@ -5,8 +5,6 @@ import re
 
 from . import (
     auth,
-    commands,
-    tests,
     utils,
     account,
     auth,

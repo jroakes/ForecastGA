@@ -25,13 +25,7 @@ class mySSA(object):
         self.ts_N = self.ts.shape[0]
         self.freq = self.ts.index.inferred_freq
 
-    # @staticmethod
-    # def _printer(name, *args):
-    #     '''Helper function to print messages neatly'''
-    #     print('-'*40)
-    #     print(name+':')
-    #     for msg in args:
-    #         print(msg)
+
 
     @staticmethod
     def _dot(x, y):
@@ -112,12 +106,7 @@ class mySSA(object):
         self.missing_dimensions = self.X_missing.shape
         self.no_missing = self.missing_dimensions[1] == 0
 
-        # if verbose:
-        #     msg1 = 'Embedding dimension\t:  {}\nTrajectory dimensions\t: {}'
-        #     msg2 = 'Complete dimension\t: {}\nMissing dimension     \t: {}'
-        #     msg1 = msg1.format(self.embedding_dimension, self.trajectory_dimentions)
-        #     msg2 = msg2.format(self.complete_dimensions, self.missing_dimensions)
-        #     self._printer('EMBEDDING SUMMARY', msg1, msg2)
+
 
         if return_df:
             return self.X_df
@@ -144,11 +133,7 @@ class mySSA(object):
         )
         self.orthonormal_base = {i: self.U[:, i] for i in range(self.r)}
 
-        # if verbose:
-        #     msg1 = 'Rank of trajectory\t\t: {}\nDimension of projection space\t: {}'
-        #     msg1 = msg1.format(self.d, self.r)
-        #     msg2 = 'Characteristic of projection\t: {}'.format(self.r_characteristic)
-        #     self._printer('DECOMPOSITION SUMMARY', msg1, msg2)
+
 
     def view_s_contributions(
         self, adjust_scale=False, cumulative=False, return_df=False

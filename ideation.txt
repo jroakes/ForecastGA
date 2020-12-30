@@ -1,19 +1,22 @@
 
+## Inspiration
+* https://github.com/antoinecarme/pyaf
+* https://github.com/AutoViML/Auto_TS
+* https://github.com/winedarksea/AutoTS
+* https://github.com/antoinecarme/pyaf
+* https://github.com/firmai/atspy
 
+## Include in Forecasting:
+* https://github.com/facebook/prophet
+* https://github.com/awslabs/gluon-ts
+* https://github.com/alkaline-ml/pmdarima
+* autoarima
+* pytorch_forecasting
+* prophet
+* nbeats
+* wavenet
+* PyLightGBM
 
-Include in Forecasting:
-https://github.com/facebook/prophet
-https://github.com/awslabs/gluon-ts
-https://github.com/alkaline-ml/pmdarima
-
-autoarima
-pytorch_forecasting
-prophet
-nbeats
-wavenet
-
-
-PyLightGBM
 
 ARIMA [14],
 the Holt–Winters additive model (HWAAS) [15],

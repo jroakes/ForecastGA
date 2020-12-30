@@ -11,7 +11,7 @@ from tsfresh import select_features
 from sklearn.decomposition import PCA
 import lightgbm as lgb
 
-from atspy.helpers.logging import get_logger
+from forecastga.helpers.logging import get_logger
 
 _LOG = get_logger(__name__)
 
@@ -66,7 +66,7 @@ def ensemble_lightgbm(forecast_in, forecast_out, pred):
     d_train = lgb.Dataset(
         forecast_train.drop(columns=[target]), label=forecast_train[target]
     )
-    # d_valid = lgb.Dataset(forecast_test.drop(columns=[target]), label=forecast_test[target])
+
     params = {
         "boosting_type": "gbdt",
         "objective": "regression",
@@ -91,8 +91,9 @@ def ensemble_lightgbm(forecast_in, forecast_out, pred):
 
 
 def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
-
-    #### Create rolled time series for ts feature extraction
+    """
+    Create rolled time series for ts feature extraction
+    """
 
     def tsfresh_run(forecast, season, insample=True, forecast_out=None):
         df_roll_prep = forecast.reset_index()
@@ -115,9 +116,9 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
         counts = df_roll["id"].value_counts()
         df_roll_cut = df_roll[df_roll["id"].isin(counts[counts >= season].index)]
 
-        ### TS feature extraction
+        # TS feature extraction
         concat_df = pd.DataFrame()
-        # rap = 4 ## Change this to suit your memory capacity, the lower the more memory
+
         concat_df = extract_features(
             df_roll_cut.ffill(),
             column_id="id",
@@ -153,7 +154,7 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
 
         return concat_df
 
-    print("LightGBM ensemble have been successfully built")
+    _LOG.info("LightGBM ensemble have been successfully built")
 
     concat_df_drop_in = tsfresh_run(forecast_in, season, insample=True)
 
@@ -173,8 +174,7 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
     )
     extracted_n_selected_out = concat_df_drop_out[extracted_n_selected.columns]
 
-    ## Reduce the dimensions of generated time series features
-
+    # Reduce the dimensions of generated time series features
     pca2 = PCA(n_components=8)
     pca2.fit(extracted_n_selected)
     pca2_results_in = pca2.transform(extracted_n_selected)
@@ -202,7 +202,7 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
     d_train = lgb.Dataset(
         forecast_train.drop(columns=[target]), label=forecast_train[target]
     )
-    # d_valid = lgb.Dataset(forecast_test.drop(columns=[target]), label=forecast_test[target])
+
     params = {
         "boosting_type": "gbdt",
         "objective": "regression",
@@ -226,13 +226,16 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
     ensemble_ts_out = pd.DataFrame(index=df_out.index)
     ensemble_ts_out["ensemble_ts"] = model.predict(df_out)
 
-    print("LightGBM ensemble have been successfully built")
+    _LOG.info("LightGBM ensemble have been successfully built")
 
     return ensemble_ts, ensemble_ts_out
 
 
 def ensemble_pure(forecast_in, forecast_out):
-    ## Pure Emsemble
+    """
+    Pure Emsemble
+    """
+
     df_perf = ensemble_performance(forecast_in).drop("Target", axis=1)
 
     def run_ensemble(df_perf, forecast):
@@ -298,7 +301,7 @@ def ensemble_doubled(middle_in, middle_out, forecast_in, forecast_out):
         middle_out, forecast_out, left_index=True, right_index=True, how="left"
     )
 
-    ## Double Ensemble
+    # Double Ensemble
     df_perf = ensemble_performance(third_merge_in).drop("Target", axis=1)
 
     def inner_ensemble(df_perf, third_merge):

@@ -2,14 +2,13 @@
 # coding: utf-8
 #
 
-"""Logging Utility"""
+"""Forecastga: Logging Utility"""
 
 import logging
-from logging import DEBUG, INFO, ERROR, Formatter, getLogger  # noqa: unused-import
-
+from logging import DEBUG, INFO, ERROR, Formatter, getLogger
 
 # file output
-FILE_HANDLER = logging.FileHandler(filename="atspy.error.log")
+FILE_HANDLER = logging.FileHandler(filename="forecastga.error.log")
 
 FILE_HANDLER.setFormatter(
     Formatter("%(asctime)s [%(levelname)s]" "  %(name)s,%(lineno)s  %(message)s")
@@ -21,7 +20,7 @@ CONSOLE_HANDLER = logging.StreamHandler()
 CONSOLE_HANDLER.setLevel(ERROR)
 CONSOLE_HANDLER.setFormatter(Formatter("%(message)s"))
 
-SDCT_LOGGER = getLogger("atspy")
+SDCT_LOGGER = getLogger("forecastga")
 
 # add handlers
 SDCT_LOGGER.addHandler(CONSOLE_HANDLER)
