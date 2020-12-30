@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ForecastGA"
+version = "0.1.0"
+description = "A Python tool to forecast GA data using several popular timeseries models"
+authors = ["JR Oakes <jroakes@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/jroakes/ForecastGA"
+repository = "https://github.com/jroakes/ForecastGA"
+keywords = ["google analytics", "forecasting", "python"]
+
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
