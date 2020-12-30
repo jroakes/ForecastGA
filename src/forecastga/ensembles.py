@@ -11,9 +11,10 @@ from tsfresh import select_features
 from sklearn.decomposition import PCA
 import lightgbm as lgb
 
-from atspy.etc.logging import get_logger
+from atspy.helpers.logging import get_logger
 
 _LOG = get_logger(__name__)
+
 
 def ensemble_performance(forecasts):
     dict_perf = {}
@@ -42,6 +43,12 @@ def time_feature(df, perd):
         df["minute"] = df.index.minute
     elif perd == "S":
         df["second"] = df.index.second
+    # elif perd in ["L","ms"]:
+    #   periodocity = 1000
+    # elif perd in ["U","us"]:
+    #   periodocity = 1000
+    # elif perd=="N":
+    #   periodocity = 1000
     return df
 
 
@@ -146,7 +153,7 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
 
         return concat_df
 
-    _LOG.info("LightGBM ensemble have been successfully built")
+    print("LightGBM ensemble have been successfully built")
 
     concat_df_drop_in = tsfresh_run(forecast_in, season, insample=True)
 
@@ -195,7 +202,7 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
     d_train = lgb.Dataset(
         forecast_train.drop(columns=[target]), label=forecast_train[target]
     )
-
+    # d_valid = lgb.Dataset(forecast_test.drop(columns=[target]), label=forecast_test[target])
     params = {
         "boosting_type": "gbdt",
         "objective": "regression",
@@ -219,7 +226,7 @@ def ensemble_tsfresh(forecast_in, forecast_out, season, perd):
     ensemble_ts_out = pd.DataFrame(index=df_out.index)
     ensemble_ts_out["ensemble_ts"] = model.predict(df_out)
 
-    _LOG.info("LightGBM ensemble have been successfully built")
+    print("LightGBM ensemble have been successfully built")
 
     return ensemble_ts, ensemble_ts_out
 
@@ -255,33 +262,6 @@ def ensemble_pure(forecast_in, forecast_out):
     df_ensemble_out = run_ensemble(df_perf, forecast_out)
 
     return df_ensemble_in, df_ensemble_out
-
-def constant_feature_detect(data, threshold=0.98):
-    """detect features that show the same value for the
-    majority/all of the observations (constant/quasi-constant features)
-
-    Parameters
-    ----------
-    data : pd.Dataframe
-    threshold : threshold to identify the variable as constant
-
-    Returns
-    -------
-    list of variables names
-    """
-
-    data_copy = data.copy(deep=True)
-    quasi_constant_feature = []
-    for feature in data_copy.columns:
-        predominant = (
-            (data_copy[feature].value_counts() / np.float(len(data_copy)))
-            .sort_values(ascending=False)
-            .values[0]
-        )
-        if predominant >= threshold:
-            quasi_constant_feature.append(feature)
-    _LOG.info(len(quasi_constant_feature), " variables are found to be almost constant")
-    return quasi_constant_feature
 
 
 def middle(ensemble_lgb, ensemble_ts, pure_ensemble):

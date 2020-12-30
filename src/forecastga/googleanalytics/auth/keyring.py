@@ -6,7 +6,7 @@ import json
 import keyring
 
 
-DOMAIN = 'Google Analytics API'
+DOMAIN = "Google Analytics API"
 
 
 def get(name):
@@ -17,8 +17,10 @@ def get(name):
     else:
         return None
 
+
 def set(name, secrets):
     keyring.set_password(DOMAIN, name, json.dumps(secrets))
+
 
 def delete(name):
     keyring.delete_password(DOMAIN, name)

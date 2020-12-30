@@ -14,9 +14,18 @@ from .. import utils
 def from_params(**params):
     credentials = {}
     for key, value in params.items():
-        if key in ('client_id', 'client_secret', 'client_email', 'private_key', 'access_token', 'refresh_token', 'identity'):
+        if key in (
+            "client_id",
+            "client_secret",
+            "client_email",
+            "private_key",
+            "access_token",
+            "refresh_token",
+            "identity",
+        ):
             credentials[key] = value
     return credentials
+
 
 def from_keyring(identity=None, **params):
     if identity:
@@ -24,11 +33,12 @@ def from_keyring(identity=None, **params):
     else:
         return None
 
+
 def from_environment(prefix=None, suffix=None, **params):
     keys = {
-        'client_id': utils.affix(prefix, 'GOOGLE_ANALYTICS_CLIENT_ID', suffix),
-        'client_secret': utils.affix(prefix, 'GOOGLE_ANALYTICS_CLIENT_SECRET', suffix),
-        'refresh_token': utils.affix(prefix, 'GOOGLE_ANALYTICS_REFRESH_TOKEN', suffix),
+        "client_id": utils.affix(prefix, "GOOGLE_ANALYTICS_CLIENT_ID", suffix),
+        "client_secret": utils.affix(prefix, "GOOGLE_ANALYTICS_CLIENT_SECRET", suffix),
+        "refresh_token": utils.affix(prefix, "GOOGLE_ANALYTICS_REFRESH_TOKEN", suffix),
     }
 
     credentials = {}
@@ -39,29 +49,30 @@ def from_environment(prefix=None, suffix=None, **params):
 
     return credentials
 
+
 def from_prompt(**params):
     prompted = {}
 
-    if not params.get('identity'):
-        prompted['identity'] = utils.input('Human-readable account name: ')
-    if not params.get('client_id'):
-        prompted['client_id'] = utils.input('Client ID: ')
-    if not params.get('client_secret'):
-        prompted['client_secret'] = utils.input('Client secret: ')
+    if not params.get("identity"):
+        prompted["identity"] = utils.input("Human-readable account name: ")
+    if not params.get("client_id"):
+        prompted["client_id"] = utils.input("Client ID: ")
+    if not params.get("client_secret"):
+        prompted["client_secret"] = utils.input("Client secret: ")
 
     return prompted
 
 
 class Credentials(object):
     STRATEGIES = {
-        'params': from_params,
-        'keyring': from_keyring,
-        'environment': from_environment,
-        'prompt': from_prompt,
+        "params": from_params,
+        "keyring": from_keyring,
+        "environment": from_environment,
+        "prompt": from_prompt,
     }
 
-    INTERACTIVE_STRATEGIES = ['params', 'keyring', 'environment', 'prompt']
-    UNSUPERVISED_STRATEGIES = ['params', 'keyring', 'environment']
+    INTERACTIVE_STRATEGIES = ["params", "keyring", "environment", "prompt"]
+    UNSUPERVISED_STRATEGIES = ["params", "keyring", "environment"]
 
     @classmethod
     def find(cls, interactive=False, valid=False, complete=False, **params):
@@ -85,24 +96,36 @@ class Credentials(object):
         # the environment variable suffix is often a good
         # descriptor of the nature of these credentials,
         # when lacking anything better
-        if params.get('identity'):
-            credentials.identity = params['identity']
-        elif params.get('suffix') and credentials.identity is credentials.client_id:
-            credentials.identity = params.get('suffix')
+        if params.get("identity"):
+            credentials.identity = params["identity"]
+        elif params.get("suffix") and credentials.identity is credentials.client_id:
+            credentials.identity = params.get("suffix")
 
         if complete and credentials.incomplete:
-            raise KeyError("Could not find client credentials and token. Tried {attempted}.".format(
-                attempted=attempted))
+            raise KeyError(
+                "Could not find client credentials and token. Tried {attempted}.".format(
+                    attempted=attempted
+                )
+            )
         elif valid and credentials.invalid:
-            raise KeyError("Could not find client id and client secret. Tried {attempted}.".format(
-                attempted=attempted))
+            raise KeyError(
+                "Could not find client id and client secret. Tried {attempted}.".format(
+                    attempted=attempted
+                )
+            )
         else:
             return credentials
 
-    def __init__(self, client_id=None, client_secret=None,
-            client_email=None, private_key=None,
-            access_token=None, refresh_token=None,
-            identity=None):
+    def __init__(
+        self,
+        client_id=None,
+        client_secret=None,
+        client_email=None,
+        private_key=None,
+        access_token=None,
+        refresh_token=None,
+        identity=None,
+    ):
         self.client_id = client_id
         self.client_secret = client_secret
         self.client_email = client_email
@@ -134,9 +157,9 @@ class Credentials(object):
 
     @property
     def valid(self):
-        """ Valid credentials are not necessarily correct, but
+        """Valid credentials are not necessarily correct, but
         they contain all necessary information for an
-        authentication attempt. """
+        authentication attempt."""
         two_legged = self.client_email and self.private_key
         three_legged = self.client_id and self.client_secret
         return two_legged or three_legged or False
@@ -148,7 +171,9 @@ class Credentials(object):
     @property
     def complete(self):
         """ Complete credentials are valid and are either two-legged or include a token. """
-        return self.valid and (self.access_token or self.refresh_token or self.type == 2)
+        return self.valid and (
+            self.access_token or self.refresh_token or self.type == 2
+        )
 
     @property
     def incomplete(self):
@@ -162,9 +187,9 @@ class Credentials(object):
             if self.type == 2:
                 return oauth2client.client.SignedJwtAssertionCredentials(
                     service_account_name=self.client_email,
-                    private_key=self.private_key.encode('utf-8'),
-                    scope='https://www.googleapis.com/auth/analytics.readonly',
-                    )
+                    private_key=self.private_key.encode("utf-8"),
+                    scope="https://www.googleapis.com/auth/analytics.readonly",
+                )
             else:
                 return oauth2client.client.OAuth2Credentials(
                     access_token=self.access_token,
@@ -176,18 +201,18 @@ class Credentials(object):
                     user_agent=None,
                     revoke_uri=oauth2client.GOOGLE_REVOKE_URI,
                     id_token=None,
-                    token_response=None
-                    )
+                    token_response=None,
+                )
 
     def serialize(self):
         return {
-            'identity': self.identity,
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'client_email': self.client_email,
-            'private_key': self.private_key,
-            'access_token': self.access_token,
-            'refresh_token': self.refresh_token,
+            "identity": self.identity,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "client_email": self.client_email,
+            "private_key": self.private_key,
+            "access_token": self.access_token,
+            "refresh_token": self.refresh_token,
         }
 
     def authorize(self):
@@ -205,13 +230,20 @@ class Credentials(object):
 
 def normalize(fn):
     @inspector.changes(fn)
-    def normalized_fn(client_id=None, client_secret=None,
-            access_token=None, refresh_token=None, identity=None):
-        
+    def normalized_fn(
+        client_id=None,
+        client_secret=None,
+        access_token=None,
+        refresh_token=None,
+        identity=None,
+    ):
+
         if isinstance(client_id, Credentials):
             credentials = client_id
         else:
-            credentials = Credentials(client_id, client_secret, access_token, refresh_token, identity)
+            credentials = Credentials(
+                client_id, client_secret, access_token, refresh_token, identity
+            )
 
         return fn(credentials)
 

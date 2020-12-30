@@ -10,6 +10,7 @@ from gluonts.dataset.common import ListDataset
 
 from base import BaseModel
 
+
 class Gluonts_Model(BaseModel):
     """Gluonts Model Class"""
 
@@ -43,7 +44,6 @@ class Gluonts_Model(BaseModel):
         else:
             self.model = estimator.train(training_data=self.dataframe(train))
 
-
     def forecast(self):
         if freq == "MS":
             freq = "M"
@@ -67,6 +67,4 @@ class Gluonts_Model(BaseModel):
             for df_entry, forecast in zip(
                 future, self.model.predict(future)
             ):  # next(predictor.predict(future))
-                self.forecast = forecast.samples.mean(
-                    axis=0
-                )  # .quantile(0.5)
+                self.forecast = forecast.samples.mean(axis=0)  # .quantile(0.5)

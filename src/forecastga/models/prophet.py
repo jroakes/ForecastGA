@@ -8,6 +8,7 @@ from fbprophet import Prophet
 
 from base import BaseModel
 
+
 class Prophet_Model(BaseModel):
     """Prophet Model Class"""
 

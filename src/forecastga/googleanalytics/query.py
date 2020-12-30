@@ -23,12 +23,13 @@ from .columns import Column, ColumnList, Segment
 
 
 INTERVAL_TIMEDELTAS = {
-    'year': dict(years=1),
-    'year_month': dict(months=1),
-    'year_week': dict(weeks=1),
-    'date': dict(days=1),
-    'date_hour': dict(hours=1),
+    "year": dict(years=1),
+    "year_month": dict(months=1),
+    "year_week": dict(weeks=1),
+    "date": dict(days=1),
+    "date_hour": dict(hours=1),
 }
+
 
 def path(l, *keys):
     indexed = {}
@@ -43,7 +44,7 @@ def path(l, *keys):
 
 
 def default(metric):
-    if 'avg' in metric:
+    if "avg" in metric:
         return None
     else:
         return 0
@@ -101,46 +102,54 @@ class Report(object):
         self.queries = []
 
         all_columns = query.api.all_columns
-        report_columns = [column['name'] for column in raw['columnHeaders']]
+        report_columns = [column["name"] for column in raw["columnHeaders"]]
         self.columns = ColumnList([all_columns[column] for column in report_columns])
-        self.metrics = addressable.filter(lambda column: column.type == 'metric', self.columns)
-        self.dimensions = addressable.filter(lambda column: column.type == 'dimension', self.columns)
-        time_columns = ['date_hour', 'date', 'year_week', 'year_month', 'year']
+        self.metrics = addressable.filter(
+            lambda column: column.type == "metric", self.columns
+        )
+        self.dimensions = addressable.filter(
+            lambda column: column.type == "dimension", self.columns
+        )
+        time_columns = ["date_hour", "date", "year_week", "year_month", "year"]
         try:
-            self.granularity = next(column for column in self.dimensions if column.python_slug in time_columns)
+            self.granularity = next(
+                column
+                for column in self.dimensions
+                if column.python_slug in time_columns
+            )
         except StopIteration:
             self.granularity = None
         slugs = [column.python_slug for column in self.columns]
-        self.Row = collections.namedtuple('Row', slugs)
+        self.Row = collections.namedtuple("Row", slugs)
         self.rows = []
         self.append(raw, query)
 
         self.since = self.until = None
 
-        if 'start-date' in raw['query']:
-            self.since = datetime.strptime(raw['query']['start-date'], '%Y-%m-%d')
+        if "start-date" in raw["query"]:
+            self.since = datetime.strptime(raw["query"]["start-date"], "%Y-%m-%d")
 
-        if 'end-date' in raw['query']:
-            self.until = datetime.strptime(raw['query']['end-date'], '%Y-%m-%d')
+        if "end-date" in raw["query"]:
+            self.until = datetime.strptime(raw["query"]["end-date"], "%Y-%m-%d")
 
     def append(self, raw, query):
         self.raw.append(raw)
         self.queries.append(query)
-        self.is_complete = not 'nextLink' in raw
+        self.is_complete = not "nextLink" in raw
 
         casters = [column.cast for column in self.columns]
 
         # if no rows were returned, the GA API doesn't
         # include the `rows` key at all
-        for row in self.raw[-1].get('rows', []):
+        for row in self.raw[-1].get("rows", []):
             typed_row = [casters[i](row[i]) for i in range(len(self.columns))]
             typed_tuple = self.Row(*typed_row)
             self.rows.append(typed_tuple)
 
         # TODO: figure out how this works with paginated queries
-        self.totals = raw['totalsForAllResults']
+        self.totals = raw["totalsForAllResults"]
         # more intuitive when querying for just a single metric
-        self.total = list(raw['totalsForAllResults'].values())[0]
+        self.total = list(raw["totalsForAllResults"].values())[0]
 
     @property
     def first(self):
@@ -163,7 +172,9 @@ class Report(object):
         elif len(self.rows) == 1:
             return self.values[0]
         else:
-            raise ValueError("This report contains multiple rows or metrics. Please use `rows`, `first`, `last` or a column name.")
+            raise ValueError(
+                "This report contains multiple rows or metrics. Please use `rows`, `first`, `last` or a column name."
+            )
 
     @property
     def values(self):
@@ -171,7 +182,9 @@ class Report(object):
             metric = self.metrics[0]
             return self[metric]
         else:
-            raise ValueError("This report contains multiple metrics. Please use `rows`, `first`, `last` or a column name.")
+            raise ValueError(
+                "This report contains multiple metrics. Please use `rows`, `first`, `last` or a column name."
+            )
 
     # TODO: it'd be nice to have metadata from `ga` available as
     # properties, rather than only having them in serialized form
@@ -194,7 +207,10 @@ class Report(object):
         time_range = list(ranges.date.range(*time_interval, **time_step))
 
         # 1b. generate dimension factor grid
-        factors = {dimension: set(report[dimension]) for dimension in set(dimensions) - {granularity}}
+        factors = {
+            dimension: set(report[dimension])
+            for dimension in set(dimensions) - {granularity}
+        }
 
         # 1c. assemble grid
         grid = list(itertools.product(time_range, *factors.values()))
@@ -225,30 +241,33 @@ class Report(object):
         report.rows = filled
         return report
 
-
     def serialize(self, format=None, with_metadata=False):
         names = [column.name for column in self.columns]
 
         if not format:
             return self.as_dict(with_metadata=with_metadata)
-        elif format == 'json':
+        elif format == "json":
             return json.dumps(self.as_dict(with_metadata=with_metadata), indent=4)
-        elif format == 'csv':
+        elif format == "csv":
             buf = utils.StringIO()
             writer = csv.writer(buf)
             writer.writerow(names)
             writer.writerows(self.rows)
             return buf.getvalue()
-        elif format == 'ascii':
+        elif format == "ascii":
             table = prettytable.PrettyTable(names)
-            table.align = 'l'
+            table.align = "l"
             for row in self.rows:
                 table.add_row(row)
             if with_metadata:
-                return utils.format("""
+                return utils.format(
+                    """
                     {title}
                     {table}
-                    """, title=self.queries[0].title, table=table)
+                    """,
+                    title=self.queries[0].title,
+                    table=table,
+                )
             else:
                 return table
 
@@ -262,17 +281,18 @@ class Report(object):
 
         if with_metadata:
             return {
-                'title': self.queries[0].title,
-                'queries': self.queries,
-                'metrics': [column.name for column in self.metrics],
-                'dimensions': [column.name for column in self.dimensions],
-                'results': serialized,
-                }
+                "title": self.queries[0].title,
+                "queries": self.queries,
+                "metrics": [column.name for column in self.metrics],
+                "dimensions": [column.name for column in self.dimensions],
+                "results": serialized,
+            }
         else:
             return serialized
 
     def as_dataframe(self):
         import pandas
+
         # passing every row as a dictionary is not terribly efficient,
         # but it works for now
         return pandas.DataFrame(self.as_dict())
@@ -297,44 +317,46 @@ class Report(object):
     # "pageviews by day, browser"
     # (also see `title` and `description` on query objects)
     def __repr__(self):
-        metrics = ', '.join([header.name for header in self.metrics])
-        dimensions = ','.join([header.name for header in self.dimensions])
+        metrics = ", ".join([header.name for header in self.metrics])
+        dimensions = ",".join([header.name for header in self.dimensions])
         if len(dimensions):
-            return '<googleanalytics.query.Report object: {} by {}'.format(
-                metrics, dimensions)
+            return "<googleanalytics.query.Report object: {} by {}".format(
+                metrics, dimensions
+            )
         else:
-            return '<googleanalytics.query.Report object: {}'.format(
-                metrics)
+            return "<googleanalytics.query.Report object: {}".format(metrics)
 
 
 EXCLUSION = {
-    'eq': 'neq',
-    'neq': 'eq',
-    'gt': 'lte',
-    'lt': 'gte',
-    'gte': 'lt',
-    'lte': 'gt',
-    're': 'nre',
-    'nre': 're',
-    'contains': 'ncontains',
-    'ncontains': 'contains',
+    "eq": "neq",
+    "neq": "eq",
+    "gt": "lte",
+    "lt": "gte",
+    "gte": "lt",
+    "lte": "gt",
+    "re": "nre",
+    "nre": "re",
+    "contains": "ncontains",
+    "ncontains": "contains",
 }
 
 
 def select(source, selection, invert=False):
     selections = []
     for key, values in selection.items():
-        if '__' in key:
-            column, method = key.split('__')
+        if "__" in key:
+            column, method = key.split("__")
         else:
             column = key
-            method = 'eq'
+            method = "eq"
 
         if not hasattr(Column, method):
-            raise ValueError("{method} is not a valid selector. Choose from: {options}".format(
-                method=method,
-                options=', '.join(Column.selectors),
-                ))
+            raise ValueError(
+                "{method} is not a valid selector. Choose from: {options}".format(
+                    method=method,
+                    options=", ".join(Column.selectors),
+                )
+            )
 
         if invert:
             method = EXCLUSION[method]
@@ -392,10 +414,10 @@ class Query(object):
     def __init__(self, api, parameters={}, metadata={}, title=None):
         self._title = title
         self.raw = {
-            'ids': 'ga:' + api.profile.id,
-            'metrics': [],
-            'dimensions': [],
-            }
+            "ids": "ga:" + api.profile.id,
+            "metrics": [],
+            "dimensions": [],
+        }
         self.raw.update(parameters)
         self.meta = {}
         self.meta.update(metadata)
@@ -423,7 +445,7 @@ class Query(object):
             api=self.api,
             parameters=deepcopy(self.raw),
             metadata=deepcopy(self.meta),
-            )
+        )
         return query
 
     @utils.immutable
@@ -446,7 +468,8 @@ class Query(object):
                 self.raw[key] = serialize(value)
         else:
             raise ValueError(
-                "Query#set requires a key and value, a properties dictionary or keyword arguments.")
+                "Query#set requires a key and value, a properties dictionary or keyword arguments."
+            )
 
         return self
 
@@ -454,11 +477,13 @@ class Query(object):
     def columns(self, required_type=None, *values):
         for column in self.api.columns.normalize(values, wrap=True):
             if required_type and required_type != column.type:
-                raise ValueError('Tried to add {type} but received: {column}'.format(
-                    type=required_type,
-                    column=column,
-                    ))
-            self.raw[column.type + 's'].append(column.id)
+                raise ValueError(
+                    "Tried to add {type} but received: {column}".format(
+                        type=required_type,
+                        column=column,
+                    )
+                )
+            self.raw[column.type + "s"].append(column.id)
         return self
 
     # TODO: maybe do something smarter, like {granularity} {metrics}
@@ -471,15 +496,15 @@ class Query(object):
         A list of the metrics this query will ask for.
         """
 
-        if 'metrics' in self.raw:
-            metrics = self.raw['metrics']
+        if "metrics" in self.raw:
+            metrics = self.raw["metrics"]
             head = metrics[0:-1] or metrics[0:1]
             text = ", ".join(head)
             if len(metrics) > 1:
                 tail = metrics[-1]
                 text = text + " and " + tail
         else:
-            text = 'n/a'
+            text = "n/a"
 
         return text
 
@@ -499,7 +524,7 @@ class Query(object):
         query.metrics('pageviews', 'page load time')
         ```
         """
-        return self.columns('metric', *metrics)
+        return self.columns("metric", *metrics)
 
     def dimensions(self, *dimensions):
         """
@@ -509,7 +534,7 @@ class Query(object):
         query.dimensions('search term', 'search depth')
         ```
         """
-        return self.columns('dimension', *dimensions)
+        return self.columns("dimension", *dimensions)
 
     @utils.immutable
     def sort(self, *columns, **options):
@@ -534,42 +559,48 @@ class Query(object):
         ```
         """
 
-        sorts = self.meta.setdefault('sort', [])
+        sorts = self.meta.setdefault("sort", [])
 
         for column in columns:
             if isinstance(column, Column):
                 identifier = column.id
             elif isinstance(column, utils.basestring):
-                descending = column.startswith('-') or options.get('descending', False)
-                identifier = self.api.columns[column.lstrip('-')].id
+                descending = column.startswith("-") or options.get("descending", False)
+                identifier = self.api.columns[column.lstrip("-")].id
             else:
-                raise ValueError("Can only sort on columns or column strings. Received: {}".format(column))
+                raise ValueError(
+                    "Can only sort on columns or column strings. Received: {}".format(
+                        column
+                    )
+                )
 
             if descending:
-                sign = '-'
+                sign = "-"
             else:
-                sign = ''
+                sign = ""
 
             sorts.append(sign + identifier)
 
-        self.raw['sort'] = ",".join(sorts)
+        self.raw["sort"] = ",".join(sorts)
         return self
 
     @utils.immutable
     def filter(self, value=None, exclude=False, **selection):
-        """ Most of the actual functionality lives on the Column
-        object and the `all` and `any` functions. """
-        filters = self.meta.setdefault('filters', [])
+        """Most of the actual functionality lives on the Column
+        object and the `all` and `any` functions."""
+        filters = self.meta.setdefault("filters", [])
 
         if value and len(selection):
-            raise ValueError("Cannot specify a filter string and a filter keyword selection at the same time.")
+            raise ValueError(
+                "Cannot specify a filter string and a filter keyword selection at the same time."
+            )
         elif value:
             value = [value]
         elif len(selection):
             value = select(self.api.columns, selection, invert=exclude)
 
         filters.append(value)
-        self.raw['filters'] = utils.paste(filters, ',', ';')
+        self.raw["filters"] = utils.paste(filters, ",", ";")
         return self
 
     def exclude(self, **selection):
@@ -581,19 +612,23 @@ class Query(object):
         else:
             raw = self.raw
 
-        raw['metrics'] = ','.join(self.raw['metrics'])
+        raw["metrics"] = ",".join(self.raw["metrics"])
 
-        if len(raw['dimensions']):
-            raw['dimensions'] = ','.join(self.raw['dimensions'])
+        if len(raw["dimensions"]):
+            raw["dimensions"] = ",".join(self.raw["dimensions"])
         else:
-            raw['dimensions'] = None
+            raw["dimensions"] = None
 
         return raw
 
     @property
     def cacheable(self):
-        start = 'start_date' in self.raw and not utils.date.is_relative(self.raw['start_date'])
-        end = 'end_date' in self.raw and not utils.date.is_relative(self.raw['end_date'])
+        start = "start_date" in self.raw and not utils.date.is_relative(
+            self.raw["start_date"]
+        )
+        end = "end_date" in self.raw and not utils.date.is_relative(
+            self.raw["end_date"]
+        )
         return start and end
 
     @property
@@ -601,7 +636,7 @@ class Query(object):
         query = self.build(copy=False)
         standardized_query = sorted(query.items(), key=lambda t: t[0])
         serialized_query = json.dumps(standardized_query)
-        return hashlib.sha1(serialized_query.encode('utf-8')).hexdigest()
+        return hashlib.sha1(serialized_query.encode("utf-8")).hexdigest()
 
     def execute(self):
         raw = self.build()
@@ -616,7 +651,7 @@ class Query(object):
                 if isinstance(err, TypeError):
                     width = max(map(len, self.raw.keys()))
                     raw = [(key.ljust(width), value) for key, value in self.raw.items()]
-                    parameters = utils.paste(raw, '\t', '\n')
+                    parameters = utils.paste(raw, "\t", "\n")
                     diagnostics = utils.format(
                         """
                         {message}
@@ -624,7 +659,10 @@ class Query(object):
                         The query you submitted was:
 
                         {parameters}
-                        """, message=str(err), parameters=parameters)
+                        """,
+                        message=str(err),
+                        parameters=parameters,
+                    )
                     raise errors.InvalidRequestError(diagnostics)
                 else:
                     raise err
@@ -644,18 +682,24 @@ class Query(object):
     def __getattr__(self, name):
         # IPython shell display should not trigger lazy-loading
         # (arguably this is an IPython issue and not our problem, but let's be pragmatic)
-        if name == '_ipython_display_':
-            raise AttributeError('Query objects have no custom IPython display behavior')
+        if name == "_ipython_display_":
+            raise AttributeError(
+                "Query objects have no custom IPython display behavior"
+            )
         elif hasattr(self.report, name):
             return getattr(self.report, name)
         else:
-            raise AttributeError("'{cls}' object and its associated 'Report' object have no attribute '{name}'".format(
-                cls=self.__class__.__name__,
-                name=name,
-                ))
+            raise AttributeError(
+                "'{cls}' object and its associated 'Report' object have no attribute '{name}'".format(
+                    cls=self.__class__.__name__,
+                    name=name,
+                )
+            )
 
     def __repr__(self):
-        return "<googleanalytics.query.{} object: {} ({})>".format(self.__class__.__name__, self.title, self.profile.name)
+        return "<googleanalytics.query.{} object: {} ({})>".format(
+            self.__class__.__name__, self.title, self.profile.name
+        )
 
 
 class CoreQuery(Query):
@@ -691,11 +735,24 @@ class CoreQuery(Query):
     # userIp / quotaUser
     # https://developers.google.com/analytics/devguides/reporting/core/v3/reference#q_summary
 
-    PRECISION_LEVELS = ('FASTER', 'DEFAULT', 'HIGHER_PRECISION', )
-    GRANULARITY_LEVELS = ('year', 'month', 'week', 'day', 'hour', )
+    PRECISION_LEVELS = (
+        "FASTER",
+        "DEFAULT",
+        "HIGHER_PRECISION",
+    )
+    GRANULARITY_LEVELS = (
+        "year",
+        "month",
+        "week",
+        "day",
+        "hour",
+    )
     GRANULARITY_DIMENSIONS = (
-        'ga:year', 'ga:yearMonth', 'ga:yearWeek',
-        'ga:date', 'ga:dateHour',
+        "ga:year",
+        "ga:yearMonth",
+        "ga:yearWeek",
+        "ga:date",
+        "ga:dateHour",
     )
 
     @utils.immutable
@@ -725,8 +782,8 @@ class CoreQuery(Query):
             levels = ", ".join(self.PRECISION_LEVELS)
             raise ValueError("Precision should be one of: " + levels)
 
-        if precision != 'DEFAULT':
-            self.raw.update({'samplingLevel': precision})
+        if precision != "DEFAULT":
+            self.raw.update({"samplingLevel": precision})
 
         return self
 
@@ -739,7 +796,7 @@ class CoreQuery(Query):
         entire date range, per metric.
         """
 
-        if granularity == 'total':
+        if granularity == "total":
             return self
 
         if not isinstance(granularity, int):
@@ -750,7 +807,7 @@ class CoreQuery(Query):
                 raise ValueError("Granularity should be one of: lifetime, " + levels)
 
         dimension = self.GRANULARITY_DIMENSIONS[granularity]
-        self.raw['dimensions'].insert(0, dimension)
+        self.raw["dimensions"].insert(0, dimension)
 
         return self
 
@@ -790,17 +847,18 @@ class CoreQuery(Query):
 
         start, stop = utils.date.range(start, stop, months, days)
 
-        self.raw.update({
-            'start_date': start,
-            'end_date': stop,
-        })
+        self.raw.update(
+            {
+                "start_date": start,
+                "end_date": stop,
+            }
+        )
 
         return self
 
-
     @inspector.implements(range)
     def hourly(self, *vargs, **kwargs):
-        return self.interval('hour').range(*vargs, **kwargs)
+        return self.interval("hour").range(*vargs, **kwargs)
 
     @inspector.implements(range)
     def daily(self, *vargs, **kwargs):
@@ -810,7 +868,7 @@ class CoreQuery(Query):
         `CoreQuery#range` but it sets the default granularity to
         `granularity='day'`.
         """
-        return self.interval('day').range(*vargs, **kwargs)
+        return self.interval("day").range(*vargs, **kwargs)
 
     @inspector.implements(range)
     def weekly(self, *vargs, **kwargs):
@@ -820,7 +878,7 @@ class CoreQuery(Query):
         `CoreQuery#range` but it sets the default granularity to
         `granularity='week'`.
         """
-        return self.interval('week').range(*vargs, **kwargs)
+        return self.interval("week").range(*vargs, **kwargs)
 
     @inspector.implements(range)
     def monthly(self, *vargs, **kwargs):
@@ -830,7 +888,7 @@ class CoreQuery(Query):
         `CoreQuery#range` but it sets the default granularity to
         `granularity='month'`.
         """
-        return self.interval('month').range(*vargs, **kwargs)
+        return self.interval("month").range(*vargs, **kwargs)
 
     @inspector.implements(range)
     def yearly(self, *vargs, **kwargs):
@@ -840,7 +898,7 @@ class CoreQuery(Query):
         `CoreQuery#range` but it sets the default granularity to
         `granularity='year'`.
         """
-        return self.interval('year').range(*vargs, **kwargs)
+        return self.interval("year").range(*vargs, **kwargs)
 
     @inspector.implements(range)
     def total(self, *vargs, **kwargs):
@@ -859,7 +917,7 @@ class CoreQuery(Query):
         continue fetching data, based  on the data you've already received.
         """
 
-        self.raw['max_results'] = maximum
+        self.raw["max_results"] = maximum
         return self
 
     @utils.immutable
@@ -886,22 +944,26 @@ class CoreQuery(Query):
             start = 1
             maximum = _range[0]
 
-        self.meta['limit'] = maximum
+        self.meta["limit"] = maximum
 
-        self.raw.update({
-            'start_index': start,
-            'max_results': maximum,
-        })
+        self.raw.update(
+            {
+                "start_index": start,
+                "max_results": maximum,
+            }
+        )
         return self
 
     @utils.immutable
-    def segment_sequence(self, followed_by=False, immediately_followed_by=False, first=False):
+    def segment_sequence(
+        self, followed_by=False, immediately_followed_by=False, first=False
+    ):
         # sequences are just really hard to "simplify" because so much is possible
 
         if followed_by or immediately_followed_by:
-            method = 'sequence'
+            method = "sequence"
         else:
-            method = 'condition'
+            method = "condition"
 
         raise NotImplementedError()
 
@@ -977,14 +1039,16 @@ class CoreQuery(Query):
         """
 
         SCOPES = {
-            'hits': 'perHit',
-            'sessions': 'perSession',
-            'users': 'perUser',
-            }
-        segments = self.meta.setdefault('segments', [])
+            "hits": "perHit",
+            "sessions": "perSession",
+            "users": "perUser",
+        }
+        segments = self.meta.setdefault("segments", [])
 
         if value and len(selection):
-            raise ValueError("Cannot specify a filter string and a filter keyword selection at the same time.")
+            raise ValueError(
+                "Cannot specify a filter string and a filter keyword selection at the same time."
+            )
         elif value:
             value = [self.api.segments.serialize(value)]
         elif len(selection):
@@ -995,18 +1059,20 @@ class CoreQuery(Query):
                 metric_scope = SCOPES[metric_scope]
 
             value = select(self.api.columns, selection)
-            value = [[scope, 'condition', metric_scope, condition] for condition in value]
-            value = ['::'.join(filter(None, condition)) for condition in value]
+            value = [
+                [scope, "condition", metric_scope, condition] for condition in value
+            ]
+            value = ["::".join(filter(None, condition)) for condition in value]
 
         segments.append(value)
-        self.raw['segment'] = utils.paste(segments, ',', ';')
+        self.raw["segment"] = utils.paste(segments, ",", ";")
         return self
 
     def users(self, **kwargs):
-        return self.segment(scope='users', **kwargs)
+        return self.segment(scope="users", **kwargs)
 
     def sessions(self, **kwargs):
-        return self.segment(scope='sessions', **kwargs)
+        return self.segment(scope="sessions", **kwargs)
 
     @utils.immutable
     def next(self):
@@ -1014,9 +1080,9 @@ class CoreQuery(Query):
         Return a new query with a modified `start_index`.
         Mainly used internally to paginate through results.
         """
-        step = self.raw.get('max_results', 1000)
-        start = self.raw.get('start_index', 1) + step
-        self.raw['start_index'] = start
+        step = self.raw.get("max_results", 1000)
+        start = self.raw.get("start_index", 1) + step
+        self.raw["start_index"] = start
         return self
 
     def get(self):
@@ -1043,12 +1109,11 @@ class CoreQuery(Query):
             else:
                 report = chunk
 
-            is_enough = len(report.rows) >= self.meta.get('limit', float('inf'))
+            is_enough = len(report.rows) >= self.meta.get("limit", float("inf"))
             is_complete = chunk.is_complete
             cursor = cursor.next()
 
         return report
-
 
 
 class RealTimeQuery(Query):
@@ -1078,10 +1143,12 @@ class RealTimeQuery(Query):
         ```
         """
 
-        self.meta['limit'] = maximum
-        self.raw.update({
-            'max_results': maximum,
-        })
+        self.meta["limit"] = maximum
+        self.raw.update(
+            {
+                "max_results": maximum,
+            }
+        )
         return self
 
     def get(self):
@@ -1089,6 +1156,7 @@ class RealTimeQuery(Query):
 
 
 # TODO: consider moving the blueprint functionality to a separate Python package
+
 
 def describe(profile, description):
     """
@@ -1100,9 +1168,10 @@ def describe(profile, description):
     Mostly useful if you'd like to put your queries
     in a file, rather than in Python code.
     """
-    api_type = description.pop('type', 'core')
+    api_type = description.pop("type", "core")
     api = getattr(profile, api_type)
     return refine(api.query, description)
+
 
 def refine(query, description):
     """

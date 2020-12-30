@@ -6,7 +6,8 @@
 
 from base import BaseModel
 
-class ARIMA_Model():
+
+class ARIMA_Model:
     """ARIMA Model Class"""
 
     def __init__(self):
@@ -19,4 +20,4 @@ class ARIMA_Model():
         raise NotImplementedError
 
     def forecast(self):
-            raise NotImplementedError
+        raise NotImplementedError

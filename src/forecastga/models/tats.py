@@ -10,6 +10,7 @@ from atspy.etc.helpers import get_unique_N
 
 from base import BaseModel
 
+
 class TATS_Model(BaseModel):
     """TATS Model Class"""
 

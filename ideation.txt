@@ -6,7 +6,6 @@ https://github.com/facebook/prophet
 https://github.com/awslabs/gluon-ts
 https://github.com/alkaline-ml/pmdarima
 
-
 autoarima
 pytorch_forecasting
 prophet
@@ -14,13 +13,15 @@ nbeats
 wavenet
 
 
+PyLightGBM
 
-ARIMA [14], 
-the Holt–Winters additive model (HWAAS) [15], 
-TBAT [16], 
+ARIMA [14],
+the Holt–Winters additive model (HWAAS) [15],
+TBAT [16],
 Facebook’s Prophet [17],
-DeepAR [18] (as implemented in [19]) 
+DeepAR [18] (as implemented in [19])
 and N-Beats [20],
 
+non-parametric truncated Dirichlet Process
 
 arima prophet nbeats wavenet

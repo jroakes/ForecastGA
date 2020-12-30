@@ -8,6 +8,7 @@ import pmdarima as pm
 
 from base import BaseModel
 
+
 class ARIMA_Model(BaseModel):
     """ARIMA Model Class"""
 

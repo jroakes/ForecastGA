@@ -8,6 +8,7 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 from base import BaseModel
 
+
 class HWAAS_Model(BaseModel):
     """HWAAS Model Class"""
 

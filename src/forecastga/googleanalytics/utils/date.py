@@ -21,26 +21,30 @@ def serialize(value):
 
 def extract(obj):
     if isinstance(obj, datetime.date):
-        if hasattr(obj, 'date'):
+        if hasattr(obj, "date"):
             return obj.date()
         else:
             return obj
     else:
-        raise ValueError("Can only extract date for type: date, datetime. Received: {}".format(obj))
+        raise ValueError(
+            "Can only extract date for type: date, datetime. Received: {}".format(obj)
+        )
 
 
 def parse_description(s):
     today = datetime.date.today()
-    if s == 'today':
+    if s == "today":
         return today
-    elif s == 'yesterday':
+    elif s == "yesterday":
         return today - relativedelta(days=1)
     else:
-        match = re.match('(\d+)daysAgo', s)
+        match = re.match("(\d+)daysAgo", s)
         if match:
             return today - relativedelta(days=int(match.group(1)))
         else:
-            raise ValueError("Can only parse descriptions of the format: today, yesterday, ndaysAgo")
+            raise ValueError(
+                "Can only parse descriptions of the format: today, yesterday, ndaysAgo"
+            )
 
 
 def normalize(obj):
@@ -57,7 +61,9 @@ def normalize(obj):
             except ValueError:
                 raise ValueError("Cannot parse date or description: " + obj)
     else:
-        raise ValueError("Can only normalize dates of type: date, datetime, basestring.")
+        raise ValueError(
+            "Can only normalize dates of type: date, datetime, basestring."
+        )
 
 
 def range(start=None, stop=None, months=0, days=0):
@@ -69,7 +75,8 @@ def range(start=None, stop=None, months=0, days=0):
     if days or months:
         if start and stop:
             raise Exception(
-                "A daterange cannot be defined using stop alongside months or days.")
+                "A daterange cannot be defined using stop alongside months or days."
+            )
         else:
             if is_past:
                 days = days + 1
@@ -85,4 +92,4 @@ def range(start=None, stop=None, months=0, days=0):
 
 
 def is_relative(datestring):
-    return not '-' in datestring
+    return not "-" in datestring

@@ -9,8 +9,10 @@ class TestCase(unittest.TestCase):
     def setUp(self):
         accounts = ga.authenticate()
         if not len(accounts):
-            raise Exception("Cannot proceed with unit testing: \
-                the authorized Google account does not use Google Analytics.")
+            raise Exception(
+                "Cannot proceed with unit testing: \
+                the authorized Google account does not use Google Analytics."
+            )
         else:
             self.account = accounts[0]
             self.webproperty = self.account.webproperties[0]

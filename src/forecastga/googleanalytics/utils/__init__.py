@@ -32,7 +32,7 @@ except ImportError:
 # return a path relative to the package root
 def here(*segments):
     current = os.path.dirname(__file__)
-    return os.path.realpath(os.path.join(current, '..', *segments))
+    return os.path.realpath(os.path.join(current, "..", *segments))
 
 
 # flatten nested lists
@@ -63,6 +63,7 @@ def translate(d, mapping):
 # retain only whitelisted keys in a dictionary
 def whitelist(d, allowed):
     return {k: v for k, v in d.items() if k in allowed}
+
 
 # similar to whitelist, but ordered and returns only values, not keys
 def pick(obj, allowed):

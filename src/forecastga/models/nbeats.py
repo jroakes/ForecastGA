@@ -96,7 +96,6 @@ class NBEATS_Model(BaseModel):
                 p = forecast.detach().numpy()
             self.forecast = p[-1] * norm_constant
 
-
     def train(self):
         """Train NBEATS Model"""
 
@@ -143,8 +142,8 @@ class NBEATS_Model(BaseModel):
             self.model["tuple"] = (x_train, y_train, net, norm_constant)
 
 
-
 ## NBEATS UTILS
+
 
 def plot_scatter(*args, **kwargs):
     """plot utils"""

@@ -10,6 +10,7 @@ from atspy.etc.helpers import get_unique_N, season_list
 
 from base import BaseModel
 
+
 class TBATS2_Model(BaseModel):
     """TBATS2 Model Class"""
 

@@ -4,7 +4,8 @@
 
 """Base Model"""
 
-class BaseModel():
+
+class BaseModel:
     """Base Model class of Atspy"""
 
     def __init__(self):
@@ -17,4 +18,4 @@ class BaseModel():
         raise NotImplementedError
 
     def forecast(self):
-            raise NotImplementedError
+        raise NotImplementedError

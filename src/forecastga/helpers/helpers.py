@@ -15,13 +15,13 @@ from atspy.etc.logging import get_logger
 _LOG = get_logger(__name__)
 
 
-
 def season_list(train):
     lista = []
     for i in range(15):
         i = 1 + i
         lista.append(infer_seasonality_ssa(train, i))
     return lista
+
 
 ## More Diverse Selection For TBAT
 def infer_seasonality_ssa(train, index=1):  ##skip the first one, normally

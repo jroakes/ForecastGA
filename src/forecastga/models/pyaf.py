@@ -8,6 +8,7 @@ import pyaf.ForecastEngine as autof
 
 from base import BaseModel
 
+
 class PYAF_Model(BaseModel):
     """PYAF Model Class"""
 
@@ -27,9 +28,7 @@ class PYAF_Model(BaseModel):
             iSignal="Target",
             iHorizon=len(train),
         )  # bad coding to have horison here
-        self.model = af.forecast(
-            iInputDS=train.reset_index(), iHorizon=forecast_len
-        )
+        self.model = af.forecast(iInputDS=train.reset_index(), iHorizon=forecast_len)
 
     def forecast(self):
         self.prediction = model["Target_Forecast"][-forecast_len:].values

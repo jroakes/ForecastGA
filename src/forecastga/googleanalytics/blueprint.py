@@ -7,11 +7,11 @@ import googleanalytics as ga
 class Blueprint(object):
     def __init__(self, description):
         self.raw = description
-        self.scope = description.get('scope')
-        self.defaults = description.get('defaults')
-        self._identity = description.get('identity')
-        self._queries = description.get('queries')
-    
+        self.scope = description.get("scope")
+        self.defaults = description.get("defaults")
+        self._identity = description.get("identity")
+        self._queries = description.get("queries")
+
     @property
     def identity(self):
         data = self._identity
@@ -20,9 +20,9 @@ class Blueprint(object):
                 return dict(identity=data)
             elif isinstance(data, dict):
                 return data
-        
+
         return None
-    
+
     def queries(self, profile):
         base = ga.query.describe(profile, self.defaults)
 

@@ -16,15 +16,27 @@ from . import keyring
 from . import oauth
 from .oauth import Flow, Credentials
 
-def navigate(accounts, account=None, webproperty=None, profile=None, ga_url=None, default_profile=True):
-     
+
+def navigate(
+    accounts,
+    account=None,
+    webproperty=None,
+    profile=None,
+    ga_url=None,
+    default_profile=True,
+):
+
     if ga_url:
         return get_profile_from_url(accounts, ga_url)
-        
+
     if webproperty and not account:
-        raise KeyError("Cannot navigate to a webproperty or profile without knowing the account.")
+        raise KeyError(
+            "Cannot navigate to a webproperty or profile without knowing the account."
+        )
     if profile and not (webproperty and account):
-        raise KeyError("Cannot navigate to a profile without knowing account and webproperty.")
+        raise KeyError(
+            "Cannot navigate to a profile without knowing account and webproperty."
+        )
 
     if profile:
         return accounts[account].webproperties[webproperty].profiles[profile]
@@ -39,55 +51,73 @@ def navigate(accounts, account=None, webproperty=None, profile=None, ga_url=None
     else:
         return accounts
 
-    
 
 def get_profile_from_url(accounts, ga_url):
-        
-  if isinstance(ga_url, str) and "https://analytics.google.com/" in ga_url:
-    
-    psearch = re.search('^https:\/\/analytics\.google\.com\/analytics\/web\/.*\/a(?P<a>[0-9]+)w(?P<w>[0-9]+)p(?P<p>[0-9]+).*$', str(ga_url), re.IGNORECASE)
 
-    if len(psearch.groups()) == 3:
-      return get_profile(accounts, psearch['a'], psearch['w'], psearch['p'])
+    if isinstance(ga_url, str) and "https://analytics.google.com/" in ga_url:
+
+        psearch = re.search(
+            "^https:\/\/analytics\.google\.com\/analytics\/web\/.*\/a(?P<a>[0-9]+)w(?P<w>[0-9]+)p(?P<p>[0-9]+).*$",
+            str(ga_url),
+            re.IGNORECASE,
+        )
+
+        if len(psearch.groups()) == 3:
+            return get_profile(accounts, psearch["a"], psearch["w"], psearch["p"])
+
+        else:
+            error = "The URL was not correct.  it should include a portion matching `/a23337837w45733833p149423361/`"
 
     else:
-      error = 'The URL was not correct.  it should include a portion matching `/a23337837w45733833p149423361/`'
+        error = "The url provided should start with `https://analytics.google.com\/`"
 
-  else:
-    error = 'The url provided should start with `https://analytics.google.com\/`'
+    raise KeyError(error)
 
-  raise KeyError(error)
-
-    
 
 def get_profile(accounts, account, webproperty, profile):
 
-  try:
-    
-    account = accounts[account]
-    webproperty = [w for w in account.webproperties if w.raw['internalWebPropertyId'] == webproperty][0]
-    profile = webproperty.profiles[profile]
+    try:
 
-    return profile
+        account = accounts[account]
+        webproperty = [
+            w
+            for w in account.webproperties
+            if w.raw["internalWebPropertyId"] == webproperty
+        ][0]
+        profile = webproperty.profiles[profile]
 
-  except Exception as e:
-    print('Unknown Exception:', str(e))
-    return None    
+        return profile
+
+    except Exception as e:
+        print("Unknown Exception:", str(e))
+        return None
 
 
 def find(**kwargs):
     return oauth.Credentials.find(**kwargs)
 
+
 def identity(name):
     return find(identity=name)
 
+
 def authenticate(
-        client_id=None, client_secret=None,
-        client_email=None, private_key=None,
-        access_token=None, refresh_token=None,
-        account=None, webproperty=None, profile=None,
-        ga_url=None, identity=None, prefix=None,
-        suffix=None, interactive=False, save=False):
+    client_id=None,
+    client_secret=None,
+    client_email=None,
+    private_key=None,
+    access_token=None,
+    refresh_token=None,
+    account=None,
+    webproperty=None,
+    profile=None,
+    ga_url=None,
+    identity=None,
+    prefix=None,
+    suffix=None,
+    interactive=False,
+    save=False,
+):
     """
     The `authenticate` function will authenticate the user with the Google Analytics API,
     using a variety of strategies: keyword arguments provided to this function, credentials
@@ -111,7 +141,7 @@ def authenticate(
         access_token=access_token,
         refresh_token=refresh_token,
         identity=identity,
-        )
+    )
 
     if credentials.incomplete:
         if interactive:
@@ -122,24 +152,40 @@ def authenticate(
                 identity=credentials.identity,
                 prefix=prefix,
                 suffix=suffix,
-                )
+            )
         elif credentials.type == 2:
             credentials = authorize(
                 client_email=credentials.client_email,
                 private_key=credentials.private_key,
                 identity=credentials.identity,
                 save=save,
-                )
+            )
         else:
-            raise KeyError("Cannot authenticate: enable interactive authorization, pass a token or use a service account.")
-    
+            raise KeyError(
+                "Cannot authenticate: enable interactive authorization, pass a token or use a service account."
+            )
+
     accounts = oauth.authenticate(credentials)
-    scope = navigate(accounts, account=account, webproperty=webproperty, profile=profile, ga_url=ga_url)
+    scope = navigate(
+        accounts,
+        account=account,
+        webproperty=webproperty,
+        profile=profile,
+        ga_url=ga_url,
+    )
     return scope
 
 
-
-def authorize(client_id=None, client_secret=None, client_email=None, private_key=None, save=False, identity=None, prefix=None, suffix=None):
+def authorize(
+    client_id=None,
+    client_secret=None,
+    client_email=None,
+    private_key=None,
+    save=False,
+    identity=None,
+    prefix=None,
+    suffix=None,
+):
     base_credentials = oauth.Credentials.find(
         valid=True,
         interactive=True,
@@ -150,10 +196,12 @@ def authorize(client_id=None, client_secret=None, client_email=None, private_key
         private_key=private_key,
         prefix=prefix,
         suffix=suffix,
-        )
+    )
 
     if base_credentials.incomplete:
-        credentials = oauth.authorize(base_credentials.client_id, base_credentials.client_secret)
+        credentials = oauth.authorize(
+            base_credentials.client_id, base_credentials.client_secret
+        )
         credentials.identity = base_credentials.identity
     else:
         credentials = base_credentials
@@ -163,10 +211,18 @@ def authorize(client_id=None, client_secret=None, client_email=None, private_key
 
     return credentials
 
-def revoke(client_id, client_secret,
-        client_email=None, private_key=None,
-        access_token=None, refresh_token=None,
-        identity=None, prefix=None, suffix=None):
+
+def revoke(
+    client_id,
+    client_secret,
+    client_email=None,
+    private_key=None,
+    access_token=None,
+    refresh_token=None,
+    identity=None,
+    prefix=None,
+    suffix=None,
+):
 
     """
     Given a client id, client secret and either an access token or a refresh token,
@@ -175,8 +231,8 @@ def revoke(client_id, client_secret,
     """
 
     if client_email and private_key:
-        raise ValueError('Two-legged OAuth does not use revokable tokens.')
-    
+        raise ValueError("Two-legged OAuth does not use revokable tokens.")
+
     credentials = oauth.Credentials.find(
         complete=True,
         interactive=False,
@@ -187,7 +243,7 @@ def revoke(client_id, client_secret,
         refresh_token=refresh_token,
         prefix=prefix,
         suffix=suffix,
-        )
+    )
 
     retval = credentials.revoke()
     keyring.delete(credentials.identity)

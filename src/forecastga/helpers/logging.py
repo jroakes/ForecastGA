@@ -21,7 +21,7 @@ CONSOLE_HANDLER = logging.StreamHandler()
 CONSOLE_HANDLER.setLevel(ERROR)
 CONSOLE_HANDLER.setFormatter(Formatter("%(message)s"))
 
-SDCT_LOGGER = getLogger('atspy')
+SDCT_LOGGER = getLogger("atspy")
 
 # add handlers
 SDCT_LOGGER.addHandler(CONSOLE_HANDLER)

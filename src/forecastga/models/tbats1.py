@@ -8,6 +8,7 @@ from tbats import TBATS
 
 from base import BaseModel
 
+
 class TBATS1_Model(BaseModel):
     """TBATS1 Model Class"""
 

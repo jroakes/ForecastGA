@@ -8,6 +8,7 @@ from tbats import TBATS
 
 from base import BaseModel
 
+
 class TBAT_Model(BaseModel):
     """TBAT Model Class"""
 
@@ -18,9 +19,7 @@ class TBAT_Model(BaseModel):
         raise NotImplementedError
 
     def train(self):
-        bat = TBATS(use_arma_errors=False,
-                    use_box_cox=True,
-                    use_trend=True)
+        bat = TBATS(use_arma_errors=False, use_box_cox=True, use_trend=True)
         self.model = bat.fit(train)
 
     def forecast(self):

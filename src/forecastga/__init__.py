@@ -5,19 +5,15 @@
 __version__ = "0.1.0"
 
 
-"""ARIMA: Main"""
+"""ForecastGA: Main"""
 
-""" Inspiration
-* https://github.com/antoinecarme/pyaf
-* https://github.com/AutoViML/Auto_TS
-* https://github.com/winedarksea/AutoTS
-* https://github.com/antoinecarme/pyaf
-* https://github.com/firmai/atspy
+""" Inspiration:
+    See ideation.txt for inspiration.
 """
-
 
 import os
 import warnings
+
 warnings.filterwarnings("ignore")
 
 import pandas as pd
@@ -26,6 +22,7 @@ import torch
 
 import matplotlib.pyplot as plt
 from matplotlib.pylab import rcParams
+
 pd.plotting.register_matplotlib_converters()
 import seaborn as sns
 
@@ -35,9 +32,10 @@ from sklearn.model_selection import train_test_split as tts
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
-from atspy.etc.logging import get_logger
+from forecastga.helpers.logging import get_logger
 
 _LOG = get_logger(__name__)
+
 
 def parse_data(df):
     if type(df) == pd.DataFrame:
@@ -66,8 +64,10 @@ def parse_data(df):
     df.index = df.index.rename("Date")
     df.index = add_freq(df.index)
 
-    _LOG.info("The data has been successfully parsed by infering a frequency, \
-                and establishing a 'Date' index and 'Target' column.")
+    _LOG.info(
+        "The data has been successfully parsed by infering a frequency, \
+                and establishing a 'Date' index and 'Target' column."
+    )
 
     return df, pd.infer_freq(df.index)
 
@@ -76,8 +76,12 @@ def train_test_split(df, train_proportion=0.75):
 
     size = int(df["Target"].shape[0] * train_proportion)
     train, test = tts(df["Target"], train_size=size, shuffle=False, stratify=None)
-    _LOG.info("An insample split of training size {} and testing \
-                size {} has been constructed".format(len(train), len(test)))
+    _LOG.info(
+        "An insample split of training size {} and testing \
+                size {} has been constructed".format(
+            len(train), len(test)
+        )
+    )
     return train, test
 
 
@@ -99,10 +103,11 @@ def train_models(
     models_dict = {}
     for m in models:
         if in_sample:
-            print("Model {} is being trained for in sample prediction".format(m))
+            _LOG.info("Model {} is being trained for in sample prediction".format(m))
         else:
-            print("Model {} is being trained for out of sample prediction".format(m))
-
+            _LOG.info(
+                "Model {} is being trained for out of sample prediction".format(m)
+            )
 
     return models_dict, seasons
 
@@ -164,7 +169,7 @@ def insample_performance(test, forecast_dict, dict=False):
         return pd.DataFrame.from_dict(dict_perf)
 
 
-
+@dataclass()
 class AutomatedModel:
     """A configuration for the Menu.
 
@@ -175,13 +180,12 @@ class AutomatedModel:
         cancellable: Can it be cancelled?
     """
 
-    def __init__(self,  df: pd.Series = None,
-                        model_list: list = None,
-                        season: str = "infer_from_data",
-                        forecast_len: int = 20,
-                        GPU: bool = torch.cuda.is_available()
-                        ) -> None:
-
+    df: pd.Series
+    # model_list: list = ["ARIMA","HOLT"]
+    model_list: list
+    season: str = "infer_from_data"
+    forecast_len: int = 20
+    GPU: bool = torch.cuda.is_available()
 
     def train_insample(self):
         dataframe, freq = parse_data(self.df)
@@ -225,7 +229,7 @@ class AutomatedModel:
         self.models_dict_in = models_dict
 
         preformance = insample_performance(test, forecast_frame)
-        print("Successfully finished in sample forecast")
+        _LOG.info("Successfully finished in sample forecast")
 
         return forecast_frame, preformance
 
@@ -252,8 +256,9 @@ class AutomatedModel:
         return forecast_frame
 
     def ensemble(self, forecast_in, forecast_out):
-
         season = self.seasonality
+        # if season==None:
+        #   pass ValueError("Please first train a model using forecast_insample()")
 
         _LOG.info("Building LightGBM Ensemble from TS data (ensemble_lgb)")
 
@@ -261,8 +266,10 @@ class AutomatedModel:
             forecast_in, forecast_out, self.freq
         )
 
-        _LOG.info("Building LightGBM Ensemble from PCA reduced TSFresh \
-                    Features (ensemble_ts). This can take a long time.")
+        _LOG.info(
+            "Building LightGBM Ensemble from PCA reduced TSFresh Features (ensemble_ts). \
+                This can take a long time."
+        )
 
         ensemble_ts_in, ensemble_ts_out = ensemble_tsfresh(
             forecast_in, forecast_out, season, self.freq

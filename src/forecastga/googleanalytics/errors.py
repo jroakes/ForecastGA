@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+
 class GoogleAnalyticsError(Exception):
     pass
 
