@@ -22,4 +22,4 @@ class TBATS1_Model(BaseModel):
         self.model = bat.fit(self.train_df)
 
     def forecast(self):
-        self.prediction = model.forecast(self.forecast_len)
+        self.prediction = self.model.forecast(self.forecast_len)

@@ -1,25 +1,14 @@
 #! /usr/bin/env python
 # coding: utf-8
-#
-
-__version__ = "0.1.0"
 
 
 """ForecastGA: Main"""
 
-
-import os
-import warnings
+from dataclasses import dataclass
 import importlib
-
-warnings.filterwarnings("ignore")
-
-import pandas as pd
-import numpy as np
+import warnings
 import torch
-
-import matplotlib.pyplot as plt
-from matplotlib.pylab import rcParams
+import pandas as pd
 from statsmodels.tools.eval_measures import rmse
 
 from forecastga.helpers.logging import get_logger
@@ -35,12 +24,16 @@ from forecastga.ensembles import (
 from forecastga.models import MODELS
 
 pd.plotting.register_matplotlib_converters()
+warnings.filterwarnings("ignore")
 
 _LOG = get_logger(__name__)
 
 
+__version__ = "0.1.0"
+
+
 def train_models(
-    df, model_list, forecast_len, seasonality, train_proportion, GPU, in_sample
+    df, model_list, forecast_len, seasonality, train_proportion, GPU, in_sample, **kwargs
 ):
 
     models_dict = {}
@@ -101,18 +94,18 @@ def forecast_dataframe(df, forecast_dict):
     return insample
 
 
-def insample_performance(test, forecast_frame, dict=False):
-    forecasts = forecast_frame(test, forecast_dict)
+def insample_performance(forecast_frame, as_dict=False):
+
     dict_perf = {}
-    for col, _ in forecasts.iteritems():
+    for col, _ in forecast_frame.iteritems():
         dict_perf[col] = {}
         dict_perf[col]["rmse"] = rmse(forecasts["Target"], forecasts[col])
         dict_perf[col]["mse"] = dict_perf[col]["rmse"] ** 2
         dict_perf[col]["mean"] = forecasts[col].mean()
-    if dict:
+    if as_dict:
         return dict_perf
-    else:
-        return pd.DataFrame.from_dict(dict_perf)
+
+    return pd.DataFrame.from_dict(dict_perf)
 
 
 @dataclass()
@@ -149,8 +142,8 @@ class AutomatedModel:
         )
 
     def forecast_insample(self):
-        dataframe, freq = parse_data(self.df)
-        train, test = train_test_split(
+        dataframe, _ = parse_data(self.df)
+        _, test = train_test_split(
             dataframe, train_proportion=self.train_proportion
         )
 
@@ -161,7 +154,8 @@ class AutomatedModel:
 
         forecast_frame = forecast_dataframe(test, forecast_dict)
 
-        preformance = insample_performance(test, forecast_frame)
+        preformance = insample_performance(forecast_frame)
+
         _LOG.info("Successfully finished in sample forecast")
 
         return forecast_frame, preformance

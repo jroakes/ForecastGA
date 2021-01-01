@@ -30,7 +30,7 @@ SDCT_LOGGER.setLevel(DEBUG)
 logging.captureWarnings(True)
 
 
-def get_logger(log_name, level=DEBUG):
+def get_logger(log_name, level=INFO):
     """
     :param level:   CRITICAL = 50
                     ERROR = 40

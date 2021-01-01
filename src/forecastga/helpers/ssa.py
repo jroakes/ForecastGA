@@ -47,7 +47,7 @@ class mySSA(object):
         mat = m(hankel_matrix)
         L, K = mat.shape
         L_star, K_star = min(L, K), max(L, K)
-        new = np.zeros((L, K))
+        #new = np.zeros((L, K))
         if L > K:
             mat = mat.T
         ret = []

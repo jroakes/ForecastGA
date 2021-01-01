@@ -5,6 +5,7 @@
 """ForecastGA: Data Helpers"""
 
 import pandas as pd
+import numpy as np
 
 from seasonal.periodogram import periodogram
 from scipy.signal import find_peaks

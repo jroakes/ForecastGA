@@ -21,7 +21,7 @@ class HWAAS_Model(BaseModel):
                     seasonal_periods=self.seasons,
                     trend="add",
                     seasonal="add",
-                    damped=True,
+                    damped_trend=True
                 ).fit(use_boxcox=use_boxcox)
                 break
             except:

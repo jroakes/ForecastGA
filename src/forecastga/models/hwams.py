@@ -27,7 +27,7 @@ class HWAMS_Model(BaseModel):
                     seasonal_periods=self.seasons,
                     trend=params[i]["trend"],
                     seasonal=params[i]["seasonal"],
-                    damped=True,
+                    damped_trend=True,
                 ).fit(use_boxcox=params[i]["use_boxcox"])
                 break
 

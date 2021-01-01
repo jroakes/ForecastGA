@@ -4,6 +4,7 @@
 
 """ForecastGA: Prophet Model"""
 
+import pandas as pd
 from fbprophet import Prophet
 
 from base import BaseModel

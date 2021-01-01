@@ -13,7 +13,7 @@ from torch.nn import functional as F
 from nbeats_pytorch.model import (
     NBeatsNet,
 )
-import matplotlib.pyplot as plt
+
 
 from base import BaseModel
 
@@ -36,6 +36,7 @@ class NBEATS_Model(BaseModel):
         steps = kwargs.get("steps", 50)
         batch_size = kwargs.get("batch_size", 10)
         patience = kwargs.get("patience", 5)
+        device = self.get_device()
 
         net = NBeatsNet(
             stack_types=[
@@ -49,7 +50,7 @@ class NBEATS_Model(BaseModel):
             backcast_length=self.forecast_len,
             hidden_layer_units=kwargs.get("hidden_layer_units", 128),
             share_weights_in_stack=False,
-            device=self.get_device(),
+            device=device,
         )
 
         x_batch, y_batch, norm_constant = self.format_input(
@@ -66,7 +67,7 @@ class NBEATS_Model(BaseModel):
         best_loss = float("inf")
         counter = 0
 
-        for r in range(steps):
+        for _ in range(steps):
             loss = self.train_100_grad_steps(data, device, net, optimiser)
             if loss < best_loss:
                 best_loss = loss
@@ -81,8 +82,8 @@ class NBEATS_Model(BaseModel):
     def forecast(self, **kwargs):
         """Forecast NEATS Model"""
 
-        x_batch, y_batch, norm_constant = self.format_input(
-            self.dataframe, self.forecast_len
+        x_batch, _, _ = self.format_input(
+            self.dataframe, self.forecast_len, constant=self.constant
         )
 
         tp = self.train_proportion if self.in_sample else 1
@@ -117,7 +118,7 @@ class NBEATS_Model(BaseModel):
             x_batch.append(df[i - backcast_length : i])
             y_batch.append(df[i : i + forecast_length])
 
-        x_batch = np.array(x_train_batch)[..., 0]
+        x_batch = np.array(x_batch)[..., 0]
         y_batch = np.array(y_batch)[..., 0]
 
         return x_batch, y_batch, norm_constant

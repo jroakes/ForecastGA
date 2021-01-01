@@ -3,6 +3,7 @@
 #
 
 """ForecastGA: Gluonts Model"""
+import pandas as pd
 
 from gluonts.model.deepar import DeepAREstimator
 from gluonts.trainer import Trainer
@@ -34,10 +35,10 @@ class Gluonts_Model(BaseModel):
     def forecast(self):
 
         if self.forecast_df:
-            forecast = self.model.predict(format_input(self.forecast_df, self.freq))
+            forecast = self.model.predict(self.format_input(self.forecast_df, self.freq))
         else:
             forecast = self.model.predict(
-                format_input(
+                self.format_input(
                     self.train_df.tail(self.forecast_len),
                     self.freq,
                     self.train_df.index[-1]
@@ -51,5 +52,5 @@ class Gluonts_Model(BaseModel):
     def format_input(df, freq, start=None):
         if start:
             return ListDataset([{"start": start, "target": df.values}], freq=freq)
-        else:
-            return ListDataset([{"start": df.index[0], "target": df.values}], freq=freq)
+
+        return ListDataset([{"start": df.index[0], "target": df.values}], freq=freq)

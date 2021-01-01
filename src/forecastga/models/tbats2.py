@@ -6,7 +6,7 @@
 
 from tbats import TBATS
 
-from atspy.etc.helpers import get_unique_N, season_list
+from forecastga.helpers.data import get_unique_N, season_list
 
 from base import BaseModel
 

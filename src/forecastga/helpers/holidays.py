@@ -11,7 +11,6 @@ from __future__ import unicode_literals
 
 import inspect
 import unicodedata
-import warnings
 
 import pandas as pd
 import numpy as np

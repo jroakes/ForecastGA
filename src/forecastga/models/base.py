@@ -14,6 +14,7 @@ class BaseModel:
     """Base Model class of ForecastGA"""
 
     def __init__(
+        self,
         df: pd.Series,
         seasonality: str = "infer_from_data",
         forecast_len: int = 20,
@@ -34,7 +35,7 @@ class BaseModel:
         self.model = None
         self.prediction = None
 
-        format_data(df)
+        self.format_data(df)
 
     def format_data(self, df):
         self.dataframe, self.freq = parse_data(df)
