@@ -11,7 +11,6 @@ keywords = ["google analytics", "forecasting", "python"]
 
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
 pandas = "^1.2.0"
 pmdarima = "^1.8.0"
 gluonts = "^0.6.4"
