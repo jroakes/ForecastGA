@@ -1,13 +1,11 @@
 # encoding: utf-8
 
-import json
-import webbrowser
 
 import addressable
 from oauth2client import client
 from apiclient import discovery
 
-from googleanalytics import utils, account
+from forecastga.googleanalytics import account
 from .credentials import Credentials, normalize
 
 
@@ -42,8 +40,8 @@ def revoke(credentials):
 
 @normalize
 def authenticate(credentials):
-    client = credentials.authorize()
-    service = discovery.build("analytics", "v3", http=client)
+    client_service = credentials.authorize()
+    service = discovery.build("analytics", "v3", http=client_service)
     raw_accounts = service.management().accounts().list().execute()["items"]
     accounts = [account.Account(raw, service, credentials) for raw in raw_accounts]
     return addressable.List(accounts, indices=["id", "name"], insensitive=True)

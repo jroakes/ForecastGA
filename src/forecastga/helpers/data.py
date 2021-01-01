@@ -41,11 +41,11 @@ def constant_feature_detect(data, threshold=0.98):
         )
         if predominant >= threshold:
             quasi_constant_feature.append(feature)
-    print(len(quasi_constant_feature), " variables are found to be almost constant")
+    _LOG.info(len(quasi_constant_feature), " variables are found to be almost constant")
     return quasi_constant_feature
 
 
-## More Diverse Selection For TBAT
+# More Diverse Selection For TBAT
 def infer_seasonality_ssa(train, index=1):
     ssa = mySSA(train)
     ssa.embed(embedding_dimension=36, verbose=False)
@@ -64,8 +64,8 @@ def infer_seasonality_ssa(train, index=1):
     return seasonality
 
 
-## Good First Selection
-def infer_seasonality(train, index=0):  ##skip the first one, normally
+# Good First Selection
+def infer_seasonality(train, index=0):  # skip the first one, normally
     interval, power = periodogram(train, min_period=4, max_period=None)
     try:
         season = int(
@@ -74,7 +74,7 @@ def infer_seasonality(train, index=0):  ##skip the first one, normally
             .iloc[0, index]
         )
     except:
-        print("Welch Season failed, defaulting to  SSA solution")
+        _LOG.warning("Welch Season failed, defaulting to  SSA solution")
         season = int(infer_seasonality_ssa(train, index=1))
     return season
 
@@ -151,7 +151,7 @@ def parse_data(df):
         df.index.date
     except AttributeError:
         raise TypeError("The index should be a datetype")
-    print(type(df))
+
     if df.isnull().any().values[0]:
         raise ValueError(
             "The dataframe cannot have any null values, please interpolate"

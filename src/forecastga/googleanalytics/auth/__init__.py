@@ -14,7 +14,6 @@ import re
 
 from . import keyring
 from . import oauth
-from .oauth import Flow, Credentials
 
 
 def navigate(
@@ -40,16 +39,18 @@ def navigate(
 
     if profile:
         return accounts[account].webproperties[webproperty].profiles[profile]
-    elif webproperty:
+
+    if webproperty:
         scope = accounts[account].webproperties[webproperty]
         if default_profile:
             return scope.profile
-        else:
-            return scope
-    elif account:
+
+        return scope
+
+    if account:
         return accounts[account]
-    else:
-        return accounts
+
+    return accounts
 
 
 def get_profile_from_url(accounts, ga_url):
@@ -57,7 +58,7 @@ def get_profile_from_url(accounts, ga_url):
     if isinstance(ga_url, str) and "https://analytics.google.com/" in ga_url:
 
         psearch = re.search(
-            "^https:\/\/analytics\.google\.com\/analytics\/web\/.*\/a(?P<a>[0-9]+)w(?P<w>[0-9]+)p(?P<p>[0-9]+).*$",
+            r"^https:\/\/analytics\.google\.com\/analytics\/web\/.*\/a(?P<a>[0-9]+)w(?P<w>[0-9]+)p(?P<p>[0-9]+).*$",
             str(ga_url),
             re.IGNORECASE,
         )
@@ -65,13 +66,16 @@ def get_profile_from_url(accounts, ga_url):
         if len(psearch.groups()) == 3:
             return get_profile(accounts, psearch["a"], psearch["w"], psearch["p"])
 
-        else:
-            error = "The URL was not correct.  it should include a portion matching `/a23337837w45733833p149423361/`"
+        raise KeyError(
+            "The URL was not correct.  \
+                        it should include a portion matching \
+                        `/a23337837w45733833p149423361/`"
+        )
 
-    else:
-        error = "The url provided should start with `https://analytics.google.com\/`"
-
-    raise KeyError(error)
+    raise KeyError(
+        "The url provided should start with \
+                    `https://analytics.google.com/`"
+    )
 
 
 def get_profile(accounts, account, webproperty, profile):
@@ -93,12 +97,25 @@ def get_profile(accounts, account, webproperty, profile):
         return None
 
 
+"""
+Not sure if we need these.
+
+Causing issue:
+  Line: 115
+    pylint: redefined-outer-name / Redefining name 'identity' from outer scope (line 100) (col 4)
+  Line: 185
+    pylint: redefined-outer-name / Redefining name 'identity' from outer scope (line 100) (col 4)
+  Line: 222
+    pylint: redefined-outer-name / Redefining name 'identity' from outer scope (line 100) (col 4)
+
+
 def find(**kwargs):
     return oauth.Credentials.find(**kwargs)
 
 
 def identity(name):
     return find(identity=name)
+"""
 
 
 def authenticate(

@@ -4,8 +4,6 @@
 
 """ForecastGA: Main"""
 
-import os
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 from dataclasses import dataclass
 import importlib
@@ -15,7 +13,7 @@ import pandas as pd
 from statsmodels.tools.eval_measures import rmse
 
 from forecastga.helpers.logging import get_logger
-from forecastga.helpers.data import parse_data, train_test_split
+from forecastga.helpers.data import parse_data, train_test_split, select_seasonality
 from forecastga.ensembles import (
     ensemble_lightgbm,
     ensemble_tsfresh,
@@ -36,7 +34,6 @@ __version__ = "0.1.0"
 
 
 class ModelConfig:
-
     def __init__(
         self,
         df: pd.Series,
@@ -55,14 +52,15 @@ class ModelConfig:
         self.in_sample = None
         self.train_df = None
         self.forecast_df = None
+        self.seasons = None
+        self.periods = None
 
         self.dataframe, self.freq = parse_data(df)
 
-
-    def in_sample(self):
+    def set_in_sample(self):
 
         self.in_sample = True
-        
+
         self.train_df, self.forecast_df = train_test_split(
             self.dataframe, train_proportion=self.train_proportion
         )
@@ -71,8 +69,7 @@ class ModelConfig:
         self.seasons = select_seasonality(self.train_df, self.seasonality)
         self.periods = select_seasonality(self.train_df, "periodocity")
 
-
-    def out_sample(self):
+    def set_out_sample(self):
 
         self.in_sample = False
 
@@ -80,7 +77,6 @@ class ModelConfig:
 
         self.seasons = select_seasonality(self.train_df, self.seasonality)
         self.periods = select_seasonality(self.train_df, "periodocity")
-
 
 
 @dataclass()
@@ -93,33 +89,32 @@ class AutomatedModel:
     forecast_len: int = 20
     GPU: bool = torch.cuda.is_available()
     models_dict: dict = {}
-    forecasts_dict: dict = {}
+    forecast_dict: dict = {}
 
     config: ModelConfig = ModelConfig(
-                                        df,
-                                        seasonality=seasonality,
-                                        forecast_len=forecast_len,
-                                        train_proportion=train_proportion,
-                                        GPU=GPU
-                                    )
+        df,
+        seasonality=seasonality,
+        forecast_len=forecast_len,
+        train_proportion=train_proportion,
+        GPU=GPU,
+    )
 
     def forecast_insample(self, **kwargs):
 
-        self.config.in_sample()
+        self.config.set_in_sample()
 
         self.models_dict = self.__train_models(**kwargs)
         self.forecast_dict = self.__forecast_models()
-        forecast_frame = self.forecast_dataframe(config.test, self.forecast_dict)
+        forecast_frame = self.forecast_dataframe(self.config.test, self.forecast_dict)
         preformance = self.insample_performance(forecast_frame)
 
         _LOG.info("Successfully finished in sample forecast")
 
         return forecast_frame, preformance
 
-
     def forecast_outsample(self, **kwargs):
 
-        self.config.out_sample()
+        self.config.set_out_sample()
 
         self.models_dict = self.__train_models(**kwargs)
         self.forecast_dict = self.__forecast_models()
@@ -127,17 +122,16 @@ class AutomatedModel:
         future_index = pd.date_range(
             self.config.dataframe.index[-1],
             periods=self.config.forecast_len + 1,
-            freq=self.config.freq
+            freq=self.config.freq,
         )[1:]
 
-        forecast_frame = forecast_dataframe(
+        forecast_frame = self.forecast_dataframe(
             pd.DataFrame({"Target": 0}, index=future_index), self.forecast_dict
         )
 
         _LOG.info("Successfully finished out of sample forecast")
 
         return forecast_frame
-
 
     def __train_models(self, **kwargs):
 
@@ -146,13 +140,16 @@ class AutomatedModel:
 
         for model_name in self.model_list:
             if model_name not in available_models:
-                _LOG.warning("Model {} is not available.  Skipping...".format(model_name))
+                _LOG.warning(
+                    "Model {} is not available.  Skipping...".format(model_name)
+                )
                 continue
 
             _LOG.info(
                 "Model {} is being loaded and \
                        trained for {} prediction".format(
-                    model_name, "in sample" if self.config.in_sample else "out of sample"
+                    model_name,
+                    "in sample" if self.config.in_sample else "out of sample",
                 )
             )
             model_data = MODELS[model_name]
@@ -166,7 +163,6 @@ class AutomatedModel:
 
         return models_dict
 
-
     def __forecast_models(self, models_dict=None):
 
         models_dict = models_dict or self.models_dict
@@ -176,7 +172,8 @@ class AutomatedModel:
 
             _LOG.info(
                 "Model {} is being used to forecast {}".format(
-                    model_name, "in sample" if in_sample else "out of sample"
+                    model_name,
+                    "in sample" if self.config.in_sample else "out of sample",
                 )
             )
 
@@ -199,14 +196,13 @@ class AutomatedModel:
         dict_perf = {}
         for col, _ in forecast_frame.iteritems():
             dict_perf[col] = {}
-            dict_perf[col]["rmse"] = rmse(forecasts["Target"], forecasts[col])
+            dict_perf[col]["rmse"] = rmse(forecast_frame["Target"], forecast_frame[col])
             dict_perf[col]["mse"] = dict_perf[col]["rmse"] ** 2
-            dict_perf[col]["mean"] = forecasts[col].mean()
+            dict_perf[col]["mean"] = forecast_frame[col].mean()
         if as_dict:
             return dict_perf
 
         return pd.DataFrame.from_dict(dict_perf)
-
 
     def ensemble(self, forecast_in, forecast_out):
         season = self.seasonality

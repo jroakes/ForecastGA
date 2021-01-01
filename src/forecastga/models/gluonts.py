@@ -35,7 +35,9 @@ class Gluonts_Model(BaseModel):
     def forecast(self):
 
         if self.forecast_df:
-            forecast = self.model.predict(self.format_input(self.forecast_df, self.freq))
+            forecast = self.model.predict(
+                self.format_input(self.forecast_df, self.freq)
+            )
         else:
             forecast = self.model.predict(
                 self.format_input(

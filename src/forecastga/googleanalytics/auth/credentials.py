@@ -30,8 +30,8 @@ def from_params(**params):
 def from_keyring(identity=None, **params):
     if identity:
         return keyring.get(identity)
-    else:
-        return None
+
+    return None
 
 
 def from_environment(prefix=None, suffix=None, **params):
@@ -63,7 +63,7 @@ def from_prompt(**params):
     return prompted
 
 
-class Credentials(object):
+class Credentials:
     STRATEGIES = {
         "params": from_params,
         "keyring": from_keyring,
@@ -84,7 +84,7 @@ class Credentials(object):
         attempted = ", ".join(strategies)
 
         credentials = cls()
-        while credentials.incomplete and len(strategies):
+        while credentials.incomplete and len(strategies) > 0:
             strategy = strategies.pop(0)
             properties = cls.STRATEGIES[strategy](**params) or {}
             for key, value in properties.items():
@@ -107,14 +107,15 @@ class Credentials(object):
                     attempted=attempted
                 )
             )
-        elif valid and credentials.invalid:
+
+        if valid and credentials.invalid:
             raise KeyError(
                 "Could not find client id and client secret. Tried {attempted}.".format(
                     attempted=attempted
                 )
             )
-        else:
-            return credentials
+
+        return credentials
 
     def __init__(
         self,
@@ -150,10 +151,10 @@ class Credentials(object):
     def type(self):
         if self.client_email and self.private_key:
             return 2
-        elif self.client_id and self.client_secret:
+        if self.client_id and self.client_secret:
             return 3
-        else:
-            return None
+
+        return None
 
     @property
     def valid(self):
@@ -183,26 +184,26 @@ class Credentials(object):
     def oauth(self):
         if self.incomplete:
             return None
-        else:
-            if self.type == 2:
-                return oauth2client.client.SignedJwtAssertionCredentials(
-                    service_account_name=self.client_email,
-                    private_key=self.private_key.encode("utf-8"),
-                    scope="https://www.googleapis.com/auth/analytics.readonly",
-                )
-            else:
-                return oauth2client.client.OAuth2Credentials(
-                    access_token=self.access_token,
-                    client_id=self.client_id,
-                    client_secret=self.client_secret,
-                    refresh_token=self.refresh_token,
-                    token_expiry=None,
-                    token_uri=oauth2client.GOOGLE_TOKEN_URI,
-                    user_agent=None,
-                    revoke_uri=oauth2client.GOOGLE_REVOKE_URI,
-                    id_token=None,
-                    token_response=None,
-                )
+
+        if self.type == 2:
+            return oauth2client.client.SignedJwtAssertionCredentials(
+                service_account_name=self.client_email,
+                private_key=self.private_key.encode("utf-8"),
+                scope="https://www.googleapis.com/auth/analytics.readonly",
+            )
+
+        return oauth2client.client.OAuth2Credentials(
+            access_token=self.access_token,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            refresh_token=self.refresh_token,
+            token_expiry=None,
+            token_uri=oauth2client.GOOGLE_TOKEN_URI,
+            user_agent=None,
+            revoke_uri=oauth2client.GOOGLE_REVOKE_URI,
+            id_token=None,
+            token_response=None,
+        )
 
     def serialize(self):
         return {
@@ -225,7 +226,7 @@ class Credentials(object):
         # `credentials.revoke` will try to revoke the refresh token even
         # if it's None, which will fail, so we have to miss with the innards
         # of oauth2client here a little bit
-        return self.oauth._do_revoke(httplib2.Http().request, self.token)
+        return self.oauth._do_revoke(httplib2.Http().request, self.token)  # noqa
 
 
 def normalize(fn):

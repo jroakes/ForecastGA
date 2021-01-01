@@ -23,7 +23,6 @@ from forecastga.helpers.data import data_generator
 CHECKPOINT_NAME = "nbeats-training-checkpoint.th"
 
 
-## Forecast Model
 class NBEATS_Model(BaseModel):
     """NBEATS Model Class"""
 
@@ -154,7 +153,7 @@ class NBEATS_Model(BaseModel):
             model.load_state_dict(checkpoint["model_state_dict"])
             optimiser.load_state_dict(checkpoint["optimizer_state_dict"])
             grad_step = checkpoint["grad_step"]
-            # print(f'Restored checkpoint from {CHECKPOINT_NAME}.')
+
             return grad_step
         return 0
 

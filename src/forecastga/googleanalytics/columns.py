@@ -4,7 +4,7 @@ import functools
 import re
 
 import addressable
-from addressable import filter, map
+
 
 from snakify import snakify
 
@@ -28,7 +28,7 @@ DIMENSIONS = {
 def escape_chars(value, chars=",;"):
     if value is True:
         return "Yes"
-    elif value is False:
+    if value is False:
         return "No"
 
     value = utils.unicode(value)
@@ -47,7 +47,7 @@ def escape(method):
     return escaped_method
 
 
-class Column(object):
+class Column:
     selectors = (
         "eq",
         "neq",
@@ -218,11 +218,11 @@ class Segment(Column):
         )
 
 
-class Filter(object):
+class Filter:
     pass
 
 
-class Goal(object):
+class Goal:
     pass
 
     """
@@ -247,8 +247,8 @@ class ColumnList(addressable.List):
     def normalize(self, value):
         if isinstance(value, self.COLUMN_TYPE):
             return value
-        else:
-            return self[value]
+
+        return self[value]
 
     @utils.vectorize
     def serialize(self, value, greedy=True):
@@ -267,8 +267,8 @@ class ColumnList(addressable.List):
 
         if isinstance(value, Column):
             return value.id
-        else:
-            return value
+
+        return value
 
 
 class SegmentList(ColumnList):

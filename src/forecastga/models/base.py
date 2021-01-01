@@ -4,24 +4,18 @@
 
 """ForecastGA: Base Model"""
 
-import pandas as pd
-import torch
-
-from forecastga.helpers.data import parse_data, train_test_split, select_seasonality
-
 
 class BaseModel:
     """Base Model class of ForecastGA"""
 
-    def __init__(
-        self,
-        config
-    ):
+    def __init__(self, config):
 
         if config.in_sample is None:
-            raise ValueError("The config class must be initialized with \
-                              `in_sample()` or `out_sample()` prior to \
-                              passing to a model.")
+            raise ValueError(
+                "The config class must be initialized with \
+                              `set_in_sample()` or `set_out_sample()` prior to \
+                              passing to a model."
+            )
 
         self.seasonality = config.seasonality
         self.forecast_len = config.forecast_len

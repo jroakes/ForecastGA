@@ -1,25 +1,26 @@
 # encoding: utf-8
 
-"""
+""" Google Analytics Query
 """
 
 import collections
 import csv
-from datetime import datetime
+
 import hashlib
 import json
 import time
+from datetime import datetime
 from copy import deepcopy
 from functools import partial
 
+import pandas
+import prettytable
 import addressable
 import inspector
-import yaml
-from dateutil.relativedelta import relativedelta
-import prettytable
+
 
 from . import errors, utils
-from .columns import Column, ColumnList, Segment
+from .columns import Column, ColumnList
 
 
 INTERVAL_TIMEDELTAS = {
@@ -31,9 +32,9 @@ INTERVAL_TIMEDELTAS = {
 }
 
 
-def path(l, *keys):
+def path(row_list, *keys):
     indexed = {}
-    for el in l:
+    for el in row_list:
         branch = indexed
         for key in keys[:-1]:
             value = getattr(el, key)
@@ -46,11 +47,11 @@ def path(l, *keys):
 def default(metric):
     if "avg" in metric:
         return None
-    else:
-        return 0
+
+    return 0
 
 
-class Report(object):
+class Report:
     """
     Executing a query will return a report, which contains the requested data.
 
@@ -135,7 +136,7 @@ class Report(object):
     def append(self, raw, query):
         self.raw.append(raw)
         self.queries.append(query)
-        self.is_complete = not "nextLink" in raw
+        self.is_complete = "nextLink" not in raw
 
         casters = [column.cast for column in self.columns]
 
@@ -155,106 +156,56 @@ class Report(object):
     def first(self):
         if len(self.rows) == 0:
             return None
-        else:
-            return self.rows[0]
+
+        return self.rows[0]
 
     @property
     def last(self):
         if len(self.rows) == 0:
             return None
-        else:
-            return self.rows[-1]
+
+        return self.rows[-1]
 
     @property
     def value(self):
         if len(self.rows) == 0:
             return None
-        elif len(self.rows) == 1:
+        if len(self.rows) == 1:
             return self.values[0]
-        else:
-            raise ValueError(
-                "This report contains multiple rows or metrics. Please use `rows`, `first`, `last` or a column name."
-            )
+
+        raise ValueError(
+            "This report contains multiple rows or metrics. \
+            Please use `rows`, `first`, `last` or a column name."
+        )
 
     @property
     def values(self):
         if len(self.metrics) == 1:
             metric = self.metrics[0]
             return self[metric]
-        else:
-            raise ValueError(
-                "This report contains multiple metrics. Please use `rows`, `first`, `last` or a column name."
-            )
 
-    # TODO: it'd be nice to have metadata from `ga` available as
-    # properties, rather than only having them in serialized form
-    # (so e.g. the actual metric objects with both serialized name, slug etc.)
-    def __expand(self):
-        import ranges
-
-        # 1. generate grid
-
-        # 1a. generate date grid
-        since = self.since
-        until = self.until + relativedelta(days=1)
-        granularity = self.granularity.slug
-        dimensions = [column.slug for column in self.dimensions]
-        metrics = [column.slug for column in self.metrics]
-
-        time_step = INTERVAL_TIMEDELTAS[self.granularity.slug]
-        time_ix = report.columns.index(self.granularity)
-        time_interval = (since, until)
-        time_range = list(ranges.date.range(*time_interval, **time_step))
-
-        # 1b. generate dimension factor grid
-        factors = {
-            dimension: set(report[dimension])
-            for dimension in set(dimensions) - {granularity}
-        }
-
-        # 1c. assemble grid
-        grid = list(itertools.product(time_range, *factors.values()))
-
-        # 2. fill in the grid with available data
-        ndim = len(self.dimensions)
-        index = path(report.rows, *report.slugs[:ndim])
-
-        filled = []
-
-        for row in grid:
-            try:
-                # navigate to data (if it exists)
-                index_columns = row[:ndim]
-                data = index
-                for column in index_columns:
-                    data = data[column]
-                filled.append(data)
-            except KeyError:
-                # TODO: for some metrics (in particular averages)
-                # the default value should be None, for most others
-                # it should be zero
-                row_metrics = [None] * len(report.metrics)
-                filler = list(row) + row_metrics
-                row = report.Row(*filler)
-                filled.append(row)
-
-        report.rows = filled
-        return report
+        raise ValueError(
+            "This report contains multiple metrics. \
+            Please use `rows`, `first`, `last` or a column name."
+        )
 
     def serialize(self, format=None, with_metadata=False):
         names = [column.name for column in self.columns]
 
         if not format:
             return self.as_dict(with_metadata=with_metadata)
-        elif format == "json":
+
+        if format == "json":
             return json.dumps(self.as_dict(with_metadata=with_metadata), indent=4)
-        elif format == "csv":
+
+        if format == "csv":
             buf = utils.StringIO()
             writer = csv.writer(buf)
             writer.writerow(names)
             writer.writerows(self.rows)
             return buf.getvalue()
-        elif format == "ascii":
+
+        if format == "ascii":
             table = prettytable.PrettyTable(names)
             table.align = "l"
             for row in self.rows:
@@ -268,8 +219,8 @@ class Report(object):
                     title=self.queries[0].title,
                     table=table,
                 )
-            else:
-                return table
+
+            return table
 
     def as_dict(self, with_metadata=False):
         serialized = []
@@ -291,7 +242,6 @@ class Report(object):
             return serialized
 
     def as_dataframe(self):
-        import pandas
 
         # passing every row as a dictionary is not terribly efficient,
         # but it works for now
@@ -323,8 +273,8 @@ class Report(object):
             return "<googleanalytics.query.Report object: {} by {}".format(
                 metrics, dimensions
             )
-        else:
-            return "<googleanalytics.query.Report object: {}".format(metrics)
+
+        return "<googleanalytics.query.Report object: {}".format(metrics)
 
 
 EXCLUSION = {
@@ -380,7 +330,7 @@ def select(source, selection, invert=False):
 # and removing empty keys as necessary
 # TODO: consider whether to pass everything through `Query#set`
 # or otherwise avoid having two paths to modifying `raw`
-class Query(object):
+class Query:
     """
     Return a query for certain metrics and dimensions.
 
@@ -474,7 +424,7 @@ class Query(object):
         return self
 
     @utils.immutable
-    def columns(self, required_type=None, *values):
+    def columns(self, *values, required_type=None):
         for column in self.api.columns.normalize(values, wrap=True):
             if required_type and required_type != column.type:
                 raise ValueError(
@@ -590,13 +540,14 @@ class Query(object):
         object and the `all` and `any` functions."""
         filters = self.meta.setdefault("filters", [])
 
-        if value and len(selection):
+        if value and len(selection) > 0:
             raise ValueError(
-                "Cannot specify a filter string and a filter keyword selection at the same time."
+                "Cannot specify a filter string and a filter keyword \
+                selection at the same time."
             )
-        elif value:
+        if value:
             value = [value]
-        elif len(selection):
+        elif len(selection) > 0:
             value = select(self.api.columns, selection, invert=exclude)
 
         filters.append(value)
@@ -614,7 +565,7 @@ class Query(object):
 
         raw["metrics"] = ",".join(self.raw["metrics"])
 
-        if len(raw["dimensions"]):
+        if len(raw["dimensions"]) > 0:
             raw["dimensions"] = ",".join(self.raw["dimensions"])
         else:
             raw["dimensions"] = None
@@ -686,15 +637,15 @@ class Query(object):
             raise AttributeError(
                 "Query objects have no custom IPython display behavior"
             )
-        elif hasattr(self.report, name):
+        if hasattr(self.report, name):
             return getattr(self.report, name)
-        else:
-            raise AttributeError(
-                "'{cls}' object and its associated 'Report' object have no attribute '{name}'".format(
-                    cls=self.__class__.__name__,
-                    name=name,
-                )
+
+        raise AttributeError(
+            "'{cls}' object and its associated 'Report' object have no attribute '{name}'".format(
+                cls=self.__class__.__name__,
+                name=name,
             )
+        )
 
     def __repr__(self):
         return "<googleanalytics.query.{} object: {} ({})>".format(
@@ -955,9 +906,7 @@ class CoreQuery(Query):
         return self
 
     @utils.immutable
-    def segment_sequence(
-        self, followed_by=False, immediately_followed_by=False, first=False
-    ):
+    def segment_sequence(self, followed_by=False, immediately_followed_by=False):
         # sequences are just really hard to "simplify" because so much is possible
 
         if followed_by or immediately_followed_by:
@@ -1045,13 +994,13 @@ class CoreQuery(Query):
         }
         segments = self.meta.setdefault("segments", [])
 
-        if value and len(selection):
+        if value and len(selection) > 0:
             raise ValueError(
                 "Cannot specify a filter string and a filter keyword selection at the same time."
             )
-        elif value:
+        if value:
             value = [self.api.segments.serialize(value)]
-        elif len(selection):
+        elif len(selection) > 0:
             if not scope:
                 raise ValueError("Scope is required. Choose from: users, sessions.")
 

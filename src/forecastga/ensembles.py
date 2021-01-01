@@ -5,20 +5,22 @@
 
 import pandas as pd
 from sklearn.model_selection import train_test_split as tts
+from sklearn.decomposition import PCA
+from statsmodels.tools.eval_measures import rmse
 from tsfresh.utilities.dataframe_functions import impute, roll_time_series
 from tsfresh import extract_features
 from tsfresh import select_features
-from sklearn.decomposition import PCA
 import lightgbm as lgb
 
 from forecastga.helpers.logging import get_logger
+from forecastga.helpers.data import constant_feature_detect
 
 _LOG = get_logger(__name__)
 
 
 def ensemble_performance(forecasts):
     dict_perf = {}
-    for col, values in forecasts.iteritems():
+    for col, _ in forecasts.iteritems():
         dict_perf[col] = {}
         dict_perf[col]["rmse"] = rmse(forecasts["Target"], forecasts[col])
         dict_perf[col]["mse"] = dict_perf[col]["rmse"] ** 2
@@ -242,7 +244,7 @@ def ensemble_pure(forecast_in, forecast_out):
 
         many = len(df_perf.iloc[0, :].sort_values())
 
-        ### Note these can fail, should see if that many indices actually exists.
+        # Note these can fail, should see if that many indices actually exists.
         df_ensemble = pd.DataFrame(index=forecast.index)
         if many == 1:
             ValueError("You need more than one model to ensemble.")
@@ -306,7 +308,7 @@ def ensemble_doubled(middle_in, middle_out, forecast_in, forecast_out):
 
     def inner_ensemble(df_perf, third_merge):
         df_ensemble = pd.DataFrame(index=third_merge.index)
-        ### Note these can fail, should see if that many indices actually exists.
+        # Note these can fail, should see if that many indices actually exists.
 
         many = len(df_perf.iloc[0, :].sort_values())
 

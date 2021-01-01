@@ -14,8 +14,8 @@ def get(name):
 
     if secrets:
         return json.loads(secrets)
-    else:
-        return None
+
+    return None
 
 
 def set(name, secrets):

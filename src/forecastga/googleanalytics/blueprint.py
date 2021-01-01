@@ -1,10 +1,9 @@
 # encoding: utf-8
 
-from copy import copy
-import googleanalytics as ga
+import forecastga.googleanalytics as ga
 
 
-class Blueprint(object):
+class Blueprint:
     def __init__(self, description):
         self.raw = description
         self.scope = description.get("scope")
@@ -18,7 +17,7 @@ class Blueprint(object):
         if data:
             if isinstance(data, ga.utils.basestring):
                 return dict(identity=data)
-            elif isinstance(data, dict):
+            if isinstance(data, dict):
                 return data
 
         return None

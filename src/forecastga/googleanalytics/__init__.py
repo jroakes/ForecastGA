@@ -1,13 +1,13 @@
 # encoding: utf-8
 
-import pkg_resources
+
 import re
+import pkg_resources
 
 from . import (
     auth,
     utils,
     account,
-    auth,
     blueprint,
     columns,
     errors,
