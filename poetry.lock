@@ -1160,6 +1160,22 @@ python-versions = ">=3.7"
 numpy = ">=1.16.5"
 
 [[package]]
+name = "seasonal"
+version = "0.3.1"
+description = "Estimate trend and seasonal effects in a timeseries"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
+scipy = "*"
+
+[package.extras]
+CSV = ["pandas"]
+PLOT = ["matplotlib"]
+
+[[package]]
 name = "setoptconf"
 version = "0.2.0"
 description = "A module for retrieving program settings from various sources in a consistant method."
@@ -1500,7 +1516,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "dfcbe91d70fe7cbca78015a71a3f1bc273c7fab4b6ab52b6c1496483700dd2f5"
+content-hash = "95e3ac7b258b6080d0d4cb987fce4b410301e119ce01c5ad226c6578fac93be6"
 
 [metadata.files]
 addressable = [
@@ -2328,6 +2344,9 @@ scipy = [
     {file = "scipy-1.6.0-cp39-cp39-win32.whl", hash = "sha256:cdbc47628184a0ebeb5c08f1892614e1bd4a51f6e0d609c6eed253823a960f5b"},
     {file = "scipy-1.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:313785c4dab65060f9648112d025f6d2fec69a8a889c714328882d678a95f053"},
     {file = "scipy-1.6.0.tar.gz", hash = "sha256:cb6dc9f82dfd95f6b9032a8d7ea70efeeb15d5b5fd6ed4e8537bb3c673580566"},
+]
+seasonal = [
+    {file = "seasonal-0.3.1-py2.py3-none-any.whl", hash = "sha256:d96358c7e510926ebc11a72352d8dcf6d233256da9b796c3da028190616f1d26"},
 ]
 setoptconf = [
     {file = "setoptconf-0.2.0.tar.gz", hash = "sha256:5b0b5d8e0077713f5d5152d4f63be6f048d9a1bb66be15d089a11c898c3cf49c"},

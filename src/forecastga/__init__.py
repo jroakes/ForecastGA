@@ -79,25 +79,34 @@ class ModelConfig:
         self.periods = select_seasonality(self.train_df, "periodocity")
 
 
-@dataclass()
+
 class AutomatedModel:
 
-    df: pd.Series
-    model_list: list
-    seasonality: str = "infer_from_data"
-    train_proportion: float = 0.75
-    forecast_len: int = 20
-    GPU: bool = torch.cuda.is_available()
-    models_dict: dict = {}
-    forecast_dict: dict = {}
+    def __init__(self,
+                df: pd.Series,
+                model_list: list,
+                seasonality: str = "infer_from_data",
+                train_proportion: float = 0.75,
+                forecast_len: int = 20,
+                GPU: bool = torch.cuda.is_available()
+                ):
 
-    config: ModelConfig = ModelConfig(
-        df,
-        seasonality=seasonality,
-        forecast_len=forecast_len,
-        train_proportion=train_proportion,
-        GPU=GPU,
-    )
+        self.df = df
+        self.model_list = model_list
+        self.seasonality = seasonality
+        self.train_proportion = train_proportion
+        self.forecast_len = forecast_len
+        self.GPU = GPU
+        self.models_dict = {}
+        self.forecast_dict = {}
+
+        self.config: ModelConfig = ModelConfig(
+            df,
+            seasonality=seasonality,
+            forecast_len=forecast_len,
+            train_proportion=train_proportion,
+            GPU=GPU,
+        )
 
     def forecast_insample(self, **kwargs):
 
@@ -133,13 +142,18 @@ class AutomatedModel:
 
         return forecast_frame
 
+    def print_model_info(self):
+        _ = [print(v['name'], ":", v['description']) for k, v in MODELS.items() if v["status"] == "active"]
+
+    def available_models(self):
+        return [k for k, v in MODELS.items() if v["status"] == "active"]
+
     def __train_models(self, **kwargs):
 
         models_dict = {}
-        available_models = [k for k, v in MODELS.items() if v["status"] == "active"]
 
         for model_name in self.model_list:
-            if model_name not in available_models:
+            if model_name not in self.available_models():
                 _LOG.warning(
                     "Model {} is not available.  Skipping...".format(model_name)
                 )

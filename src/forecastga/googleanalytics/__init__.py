@@ -16,5 +16,3 @@ from . import (
 )
 from .auth import authenticate, authorize, revoke
 from .blueprint import Blueprint
-
-__version__ = pkg_resources.get_distribution("googleanalytics").version
