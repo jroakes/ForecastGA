@@ -2,7 +2,9 @@
 # coding: utf-8
 #
 
-"""HWAMS Model"""
+"""ForecastGA: HWAMS Model"""
+
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 from base import BaseModel
 
@@ -10,13 +12,7 @@ from base import BaseModel
 class HWAMS_Model(BaseModel):
     """HWAMS Model Class"""
 
-    def __init__(self):
-        raise NotImplementedError
-
-    def dataframe(self):
-        raise NotImplementedError
-
-    def train(self):
+    def train(self, **kwargs):
 
         for i in range(3):
 
@@ -27,8 +23,8 @@ class HWAMS_Model(BaseModel):
             ]
             try:
                 self.model = ExponentialSmoothing(
-                    train,
-                    seasonal_periods=seasons,
+                    self.train_df,
+                    seasonal_periods=self.seasons,
                     trend=params[i]["trend"],
                     seasonal=params[i]["seasonal"],
                     damped=True,
@@ -39,4 +35,4 @@ class HWAMS_Model(BaseModel):
                 continue
 
     def forecast(self):
-        self.forecast = self.model.forecast(forecast_len)
+        self.prediction = self.model.forecast(self.forecast_len)

@@ -2,11 +2,11 @@
 # coding: utf-8
 #
 
-"""TATS Model"""
+"""ForecastGA: TATS Model"""
 
 from tbats import TBATS
 
-from atspy.etc.helpers import get_unique_N
+from forecastga.helpers.data import get_unique_N, season_list
 
 from base import BaseModel
 
@@ -14,19 +14,13 @@ from base import BaseModel
 class TATS_Model(BaseModel):
     """TATS Model Class"""
 
-    def __init__(self):
-        raise NotImplementedError
-
-    def dataframe(self):
-        raise NotImplementedError
-
-    def train(self):
+    def train(self, **kwargs):
         bat = TBATS(
-            seasonal_periods=list(get_unique_N(season_list(train), 1)),
+            seasonal_periods=list(get_unique_N(season_list(self.train_df), 1)),
             use_arma_errors=False,
             use_trend=True,
         )
-        self.model = bat.fit(train)
+        self.model = bat.fit(self.train_df)
 
     def forecast(self):
-        self.forecast = model.forecast(forecast_len)
+        self.prediction = self.model.forecast(self.forecast_len)

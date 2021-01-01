@@ -2,13 +2,13 @@
 # coding: utf-8
 #
 
-"""ARIMA Model"""
+"""ForecastGA: SARIMA Model"""
 
 from base import BaseModel
 
 
-class ARIMA_Model:
-    """ARIMA Model Class"""
+class SARIMA_Model:
+    """SARIMA Model Class"""
 
     def __init__(self):
         raise NotImplementedError

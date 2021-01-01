@@ -2,7 +2,7 @@
 # coding: utf-8
 #
 
-"""Forecastga: Logging Utility"""
+"""ForecastGA: Logging Utility"""
 
 import logging
 from logging import DEBUG, INFO, ERROR, Formatter, getLogger

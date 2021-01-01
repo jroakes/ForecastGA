@@ -2,12 +2,12 @@
 # coding: utf-8
 #
 
-"""ARIMA Model"""
+"""ForecastGA: SARIMAX Model"""
 
 from base import BaseModel
 
 
-class ARIMA_Model:
+class SARIMAX_Model:
     """ARIMA Model Class"""
 
     def __init__(self):

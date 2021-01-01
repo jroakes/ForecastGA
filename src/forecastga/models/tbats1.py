@@ -2,7 +2,7 @@
 # coding: utf-8
 #
 
-"""TBATS1 Model: Trend, Seasonal (one), and Box Cox"""
+"""ForecastGA: TBATS1 Model (Trend, Seasonal-one, and Box Cox)"""
 
 from tbats import TBATS
 
@@ -12,20 +12,14 @@ from base import BaseModel
 class TBATS1_Model(BaseModel):
     """TBATS1 Model Class"""
 
-    def __init__(self):
-        raise NotImplementedError
-
-    def dataframe(self):
-        raise NotImplementedError
-
-    def train(self):
+    def train(self, **kwargs):
         bat = TBATS(
-            seasonal_periods=[seasons],
+            seasonal_periods=[self.seasons],
             use_arma_errors=False,
             use_box_cox=True,
             use_trend=True,
         )
-        self.model = bat.fit(train)
+        self.model = bat.fit(self.train_df)
 
     def forecast(self):
-        self.forecast = model.forecast(forecast_len)
+        self.prediction = model.forecast(self.forecast_len)

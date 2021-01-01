@@ -2,7 +2,7 @@
 # coding: utf-8
 #
 
-"""PYAF Model"""
+"""ForecastGA: PYAF Model"""
 
 import pyaf.ForecastEngine as autof
 
@@ -12,23 +12,17 @@ from base import BaseModel
 class PYAF_Model(BaseModel):
     """PYAF Model Class"""
 
-    def __init__(self):
-        raise NotImplementedError
-
-    def dataframe(self, df):
-        df_pr = df.reset_index()
-        df_pr.columns = ["ds", "y"]
-        return df_pr
-
-    def train(self):
-        af = autof()
-        af.train(
-            iInputDS=train.reset_index(),
+    def train(self, **kwargs):
+        self.model = autof()
+        self.model.train(
+            iInputDS=self.train_df.reset_index(),
             iTime="Date",
             iSignal="Target",
-            iHorizon=len(train),
-        )  # bad coding to have horison here
-        self.model = af.forecast(iInputDS=train.reset_index(), iHorizon=forecast_len)
+            iHorizon=len(self.train_df),
+        )
 
     def forecast(self):
-        self.prediction = model["Target_Forecast"][-forecast_len:].values
+        self.model.forecast(
+            iInputDS=self.train_df.reset_index(), iHorizon=self.forecast_len
+        )
+        self.prediction = self.model["Target_Forecast"][-self.forecast_len :].values

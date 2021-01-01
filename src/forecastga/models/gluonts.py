@@ -2,7 +2,7 @@
 # coding: utf-8
 #
 
-"""Gluonts Model"""
+"""ForecastGA: Gluonts Model"""
 
 from gluonts.model.deepar import DeepAREstimator
 from gluonts.trainer import Trainer
@@ -14,57 +14,42 @@ from base import BaseModel
 class Gluonts_Model(BaseModel):
     """Gluonts Model Class"""
 
-    def __init__(self):
-        raise NotImplementedError
+    def train(self, **kwargs):
 
-    def dataframe(self, df):
-        freqed = pd.infer_freq(df.index)
-        if freqed == "MS":
-            freq = "M"
-            # start = df.index[0] + relativedelta(months=1)
-        else:
-            freq = freqed
-        df = ListDataset([{"start": df.index[0], "target": df.values}], freq=freq)
-        return df
+        # Adjust class freq.
+        self.freq = pd.infer_freq(self.train_df.index)
+        if self.freq == "MS":
+            self.freq = "M"
 
-    def train(self):
-        freqed = pd.infer_freq(train.index)
-        if freqed == "MS":
-            freq = "M"
-        else:
-            freq = freqed
         estimator = DeepAREstimator(
-            freq=freq,
-            prediction_length=forecast_len,
-            trainer=Trainer(epochs=6, ctx="gpu"),
-        )  # use_feat_dynamic_real=True
+            freq=self.freq,
+            prediction_length=self.forecast_len,
+            trainer=Trainer(epochs=6, ctx="gpu" if self.GPU else "cpu"),
+        )
 
-        if GPU:
-            self.model = estimator.train(training_data=self.dataframe(train))
-        else:
-            self.model = estimator.train(training_data=self.dataframe(train))
+        self.model = estimator.train(
+            training_data=self.format_input(self.train_df, self.freq)
+        )
 
     def forecast(self):
-        if freq == "MS":
-            freq = "M"
-        if in_sample:
-            for df_entry, forecast in zip(
-                self.dataframe(df), self.model.predict(self.dataframe(df))
-            ):
-                self.forecast = forecast.samples.mean(axis=0)
-        else:
-            future = ListDataset(
-                [
-                    {
-                        "target": df[-forecast_len:],
-                        "start": df.index[-1] + df.index.to_series().diff().min(),
-                    }
-                ],
-                freq=freq,
-            )
-            # future = ListDataset([{"target": [df[-1]]*forecast_len, "start": df.index[-1] + relativedelta(months=1)}],freq=freq)
 
-            for df_entry, forecast in zip(
-                future, self.model.predict(future)
-            ):  # next(predictor.predict(future))
-                self.forecast = forecast.samples.mean(axis=0)  # .quantile(0.5)
+        if self.forecast_df:
+            forecast = self.model.predict(format_input(self.forecast_df, self.freq))
+        else:
+            forecast = self.model.predict(
+                format_input(
+                    self.train_df.tail(self.forecast_len),
+                    self.freq,
+                    self.train_df.index[-1]
+                    + self.train_df.index.to_series().diff().min(),
+                )
+            )
+
+        self.prediction = forecast.samples.mean(axis=0)  # .quantile(0.5)
+
+    @staticmethod
+    def format_input(df, freq, start=None):
+        if start:
+            return ListDataset([{"start": start, "target": df.values}], freq=freq)
+        else:
+            return ListDataset([{"start": df.index[0], "target": df.values}], freq=freq)

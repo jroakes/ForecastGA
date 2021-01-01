@@ -2,7 +2,7 @@
 # coding: utf-8
 #
 
-"""TBATP1 Model: TBATS1 but Seasonal Inference is Hardcoded by Periodicity"""
+"""ForecastGA: TBATP1 Model (TBATS1 but Seasonal Inference is Hardcoded by Periodicity)"""
 
 from tbats import TBATS
 
@@ -12,20 +12,14 @@ from base import BaseModel
 class TBATP1_Model(BaseModel):
     """TBATP1 Model Class"""
 
-    def __init__(self):
-        raise NotImplementedError
-
-    def dataframe(self):
-        raise NotImplementedError
-
-    def train(self):
+    def train(self, **kwargs):
         bat = TBATS(
-            seasonal_periods=[periods],
+            seasonal_periods=[self.periods],
             use_arma_errors=False,
             use_box_cox=True,
             use_trend=True,
         )
-        self.model = bat.fit(train)
+        self.model = bat.fit(self.train_df)
 
     def forecast(self):
-        self.forecast = model.forecast(forecast_len)
+        self.prediction = self.model.forecast(self.forecast_len)
