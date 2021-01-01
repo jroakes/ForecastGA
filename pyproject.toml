@@ -17,7 +17,6 @@ pmdarima = "^1.8.0"
 gluonts = "^0.6.4"
 statsmodels = "^0.12.1"
 nbeats-pytorch = {git = "https://github.com/jroakes/n-beats.git"}
-torch = "^1.7.1"
 numpy = "1.19.3"
 fbprophet = "^0.7.1"
 tbats = "^1.1.0"

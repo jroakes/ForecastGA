@@ -46,7 +46,7 @@ def constant_feature_detect(data, threshold=0.98):
 
 
 ## More Diverse Selection For TBAT
-def infer_seasonality_ssa(train, index=1):  ##skip the first one, normally
+def infer_seasonality_ssa(train, index=1):
     ssa = mySSA(train)
     ssa.embed(embedding_dimension=36, verbose=False)
     ssa.decompose(True)
