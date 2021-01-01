@@ -10,7 +10,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="ForcastGA",
-    version="0.0.1",
+    version="0.1.0",
     description="Automated Google Analytics Time Series in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -18,7 +18,8 @@ setup(
     author="jroakes",
     author_email="jroakes@gmail.com",
     license="MIT",
-    packages=find_packages(),
+    py_modules=['forecastga'],
+    requires_python='>=3.6.0',
     install_requires=install_requires,
     include_package_data=True,
     zip_safe=False,
