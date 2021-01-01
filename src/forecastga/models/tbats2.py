@@ -8,11 +8,14 @@ from tbats import TBATS
 
 from forecastga.helpers.data import get_unique_N, season_list
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class TBATS2_Model(BaseModel):
     """TBATS2 Model Class"""
+
+    def __init__(self, config):
+        super().__init__(config)
 
     def train(self, **kwargs):
         bat = TBATS(

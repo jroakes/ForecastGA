@@ -4,7 +4,7 @@
 
 """ForecastGA: SARIMA Model"""
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class SARIMA_Model:

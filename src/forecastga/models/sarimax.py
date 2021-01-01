@@ -4,7 +4,7 @@
 
 """ForecastGA: SARIMAX Model"""
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class SARIMAX_Model:

@@ -9,12 +9,15 @@ from gluonts.model.deepar import DeepAREstimator
 from gluonts.trainer import Trainer
 from gluonts.dataset.common import ListDataset
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class Gluonts_Model(BaseModel):
     """Gluonts Model Class"""
 
+    def __init__(self, config):
+        super().__init__(config)
+        
     def train(self, **kwargs):
 
         # Adjust class freq.

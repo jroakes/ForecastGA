@@ -6,12 +6,15 @@
 
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class HWAMS_Model(BaseModel):
     """HWAMS Model Class"""
 
+    def __init__(self, config):
+        super().__init__(config)
+        
     def train(self, **kwargs):
 
         for i in range(3):

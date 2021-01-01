@@ -6,12 +6,15 @@
 
 from tbats import TBATS
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class TBAT_Model(BaseModel):
     """TBAT Model Class"""
 
+    def __init__(self, config):
+        super().__init__(config)
+        
     def train(self, **kwargs):
         bat = TBATS(use_arma_errors=False, use_box_cox=True, use_trend=True)
         self.model = bat.fit(self.train_df)

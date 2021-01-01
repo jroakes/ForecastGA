@@ -7,12 +7,15 @@
 import pandas as pd
 from fbprophet import Prophet
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class Prophet_Model(BaseModel):
     """Prophet Model Class"""
 
+    def __init__(self, config):
+        super().__init__(config)
+        
     def train(self, **kwargs):
 
         if self.freq == "D":

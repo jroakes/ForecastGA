@@ -15,7 +15,7 @@ from nbeats_pytorch.model import (
 )
 
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 from forecastga.helpers.data import data_generator
 
@@ -26,6 +26,9 @@ CHECKPOINT_NAME = "nbeats-training-checkpoint.th"
 class NBEATS_Model(BaseModel):
     """NBEATS Model Class"""
 
+    def __init__(self, config):
+        super().__init__(config)
+        
     def train(self, **kwargs):
         """Train NBEATS Model"""
 

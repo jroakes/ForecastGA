@@ -6,11 +6,14 @@
 
 from tbats import TBATS
 
-from base import BaseModel
+from forecastga.models.base  import BaseModel
 
 
 class TBATP1_Model(BaseModel):
     """TBATP1 Model Class"""
+
+    def __init__(self, config):
+        super().__init__(config)
 
     def train(self, **kwargs):
         bat = TBATS(
