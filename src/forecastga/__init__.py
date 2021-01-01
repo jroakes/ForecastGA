@@ -23,6 +23,7 @@ from forecastga.ensembles import (
     ensemble_doubled,
 )
 from forecastga.models import MODELS
+import googleanalytics as ga
 
 pd.plotting.register_matplotlib_converters()
 warnings.filterwarnings("ignore")
