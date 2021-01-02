@@ -11,7 +11,7 @@ import pandas as pd
 from statsmodels.tools.eval_measures import rmse
 
 from forecastga.helpers.logging import get_logger
-from forecastga.helpers.data import parse_data, train_test_split, select_seasonality
+from forecastga.helpers.data import parse_data, train_test_split, select_seasonality, print_model_info
 from forecastga.ensembles import (
     ensemble_lightgbm,
     ensemble_tsfresh,
