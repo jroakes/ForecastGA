@@ -169,8 +169,7 @@ def parse_data(df):
     df.index = add_freq(df.index)
 
     _LOG.info(
-        "The data has been successfully parsed by infering a frequency, \
-                and establishing a 'Date' index and 'Target' column."
+        "The data has been successfully parsed by infering a frequency, and establishing a 'Date' index and 'Target' column."
     )
 
     return df, pd.infer_freq(df.index)
@@ -181,8 +180,7 @@ def train_test_split(df, train_proportion=0.75):
     size = int(df["Target"].shape[0] * train_proportion)
     train, test = tts(df["Target"], train_size=size, shuffle=False, stratify=None)
     _LOG.info(
-        "An insample split of training size {} and testing \
-                size {} has been constructed".format(
+        "An insample split of training size {} and testing size {} has been constructed".format(
             len(train), len(test)
         )
     )
