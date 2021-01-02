@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-import forecastga.googleanalytics as ga
+import forecastga.ga as ga
 
 
 class Blueprint:

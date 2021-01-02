@@ -7,7 +7,7 @@ import addressable
 from oauth2client import client
 from apiclient import discovery
 
-from forecastga.googleanalytics import utils, account
+from forecastga.ga import utils, account
 from .credentials import Credentials, normalize
 
 
