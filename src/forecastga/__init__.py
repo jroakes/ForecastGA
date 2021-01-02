@@ -4,8 +4,6 @@
 
 """ForecastGA: Main"""
 
-
-from dataclasses import dataclass
 import importlib
 import warnings
 import torch
