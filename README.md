@@ -1,5 +1,7 @@
 # ForecastGA: A Python tool to forecast GA data using several popular timeseries models.
 
+Google Colab Notebook: https://colab.research.google.com/drive/1CVj6ObeR9BeqJXDj4J1TrFBpHuQS8MwO
+
 ## About
 
 ### Welcome to ForecastGA
@@ -29,7 +31,6 @@ model_list = ["TATS", "TBATS1", "TBATP1", "TBATS2", "ARIMA"]
 am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 ```
 
-
 ##### Pandas DataFrame:
 
 ```
@@ -38,7 +39,6 @@ data = pd.read_csv('ts.csv').sessions
 model_list = ["TATS", "TBATS1", "TBATP1", "TBATS2", "ARIMA"]
 am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 ```
-
 
 #### Forecast Insample:
 `forecast_in, performance = am.forecast_insample()`
