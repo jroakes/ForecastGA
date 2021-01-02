@@ -158,8 +158,7 @@ class AutomatedModel:
                 continue
 
             _LOG.info(
-                "Model {} is being loaded and \
-                       trained for {} prediction".format(
+                "Model {} is being loaded and trained for {} prediction".format(
                     model_name,
                     "in sample" if self.config.in_sample else "out of sample",
                 )
@@ -226,8 +225,7 @@ class AutomatedModel:
         )
 
         _LOG.info(
-            "Building LightGBM Ensemble from PCA reduced TSFresh Features (ensemble_ts). \
-                This can take a long time."
+            "Building LightGBM Ensemble from PCA reduced TSFresh Features (ensemble_ts). This can take a long time."
         )
 
         ensemble_ts_in, ensemble_ts_out = ensemble_tsfresh(
