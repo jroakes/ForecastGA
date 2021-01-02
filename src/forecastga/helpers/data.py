@@ -18,7 +18,7 @@ _LOG = get_logger(__name__)
 
 from forecastga.models import MODELS
 
-def print_model_info(self):
+def print_model_info():
     _ = [print(v['name'], ":", v['description']) for k, v in MODELS.items() if v["status"] == "active"]
 
 def constant_feature_detect(data, threshold=0.98):
