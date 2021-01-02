@@ -116,7 +116,7 @@ class AutomatedModel:
 
         self.models_dict = self.__train_models(**kwargs)
         self.forecast_dict = self.__forecast_models()
-        forecast_frame = self.forecast_dataframe(self.config.test, self.forecast_dict)
+        forecast_frame = self.forecast_dataframe(self.config.forecast_df, self.forecast_dict)
         preformance = self.insample_performance(forecast_frame)
 
         _LOG.info("Successfully finished in sample forecast")

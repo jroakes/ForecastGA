@@ -51,7 +51,7 @@ class Gluonts_Model(BaseModel):
                 )
             )
 
-        self.prediction = forecast.samples.mean(axis=0)  # .quantile(0.5)
+        self.prediction = list(forecast)[0].samples.mean(axis=0)  # .quantile(0.5)
 
     @staticmethod
     def format_input(df, freq, start=None):
