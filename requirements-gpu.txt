@@ -34,4 +34,6 @@ torch
 tqdm
 tsfresh
 werkzeug
-mxnet
+
+#GPU:
+mxnet-cu101==1.7.0

@@ -17,7 +17,7 @@ class Gluonts_Model(BaseModel):
 
     def __init__(self, config):
         super().__init__(config)
-        
+
     def train(self, **kwargs):
 
         # Adjust class freq.
@@ -37,7 +37,7 @@ class Gluonts_Model(BaseModel):
 
     def forecast(self):
 
-        if self.forecast_df:
+        if self.forecast_df is not None:
             forecast = self.model.predict(
                 self.format_input(self.forecast_df, self.freq)
             )

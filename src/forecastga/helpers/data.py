@@ -16,6 +16,10 @@ from forecastga.helpers.logging import get_logger
 
 _LOG = get_logger(__name__)
 
+from forecastga.models import MODELS
+
+def print_model_info(self):
+    _ = [print(v['name'], ":", v['description']) for k, v in MODELS.items() if v["status"] == "active"]
 
 def constant_feature_detect(data, threshold=0.98):
     """detect features that show the same value for the
