@@ -37,7 +37,7 @@ class Gluonts_Model(BaseModel):
 
     def forecast(self):
 
-        if self.forecast_df is not None:
+        if self.in_sample:
             forecast = self.model.predict(
                 self.format_input(self.forecast_df, self.freq)
             )
