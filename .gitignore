@@ -151,3 +151,4 @@ identity.json
 src/test.py
 not_used/
 pyproject.toml
+*.lock

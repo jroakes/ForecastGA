@@ -1,9 +1,13 @@
+#! /usr/bin/env python
+# coding: utf-8
+#
+
+"""ForecastGA: SSA Helper"""
+
 import numpy as np
 import pandas as pd
 from numpy import matrix as m
 from scipy import linalg
-
-"""ForecastGA: SSA Helper"""
 
 
 class mySSA(object):
