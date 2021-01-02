@@ -26,6 +26,8 @@ class BaseModel:
         self.dataframe = config.dataframe
         self.train_df = config.train_df
         self.forecast_df = config.forecast_df
+        self.seasons = config.seasons
+        self.periods = config.periods
         self.model = None
         self.prediction = None
 
