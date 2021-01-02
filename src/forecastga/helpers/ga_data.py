@@ -7,6 +7,7 @@ import os
 from types import SimpleNamespace
 from datetime import datetime
 import pandas as pd
+import numpy as np
 
 from forecastga.helpers.logging import get_logger
 
