@@ -1,8 +1,5 @@
 # encoding: utf-8
-
-
-import re
-import pkg_resources
+""" Google Analytics Package"""
 
 from . import (
     auth,
