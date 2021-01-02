@@ -66,6 +66,8 @@ def get_ga_data(data):
     if profile is None:
         return None
 
+    data = SimpleNamespace(**data)
+
     try:
         print('Pulling data from {} to {}.'.format(data.ga_start_date, data.ga_end_date))
         sessions = \
