@@ -103,7 +103,7 @@ class AutomatedModel:
         self.forecast_dict = {}
 
         self.config: ModelConfig = ModelConfig(
-            df,
+            self.df,
             seasonality=seasonality,
             forecast_len=forecast_len,
             train_proportion=train_proportion,
