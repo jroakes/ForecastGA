@@ -1,4 +1,5 @@
-# ForecastGA: A Python tool to forecast GA data using several popular timeseries models.
+# ForecastGA
+A Python tool to forecast GA data using several popular timeseries models.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1nmcu37MY02dfMdUbinrwwg7gA9ya3eud?usp=sharing)
 
@@ -6,6 +7,19 @@
 ## About
 
 ### Welcome to ForecastGA
+
+ForecastGA is a tool that combines a couple of popular libraries, [Atspy](https://github.com/firmai/atspy) and [googleanalytics](https://github.com/debrouwere/google-analytics), with a few enhancements.
+
+* The models are made more intuitive to upgrade and add by having the tool logic separate from the model training and prediction.
+* When calling `am.forecast_insample()`, any kwargs included (e.g. `learning_rate`) are passed to the train method of the model.
+* Google Analytics profiles are specified by simply passing the URL (e.g. https://analytics.google.com/analytics/web/?authuser=2#/report-home/aXXXXXwXXXXXpXXXXXX).
+* You can provide a `data` dict with GA config options or a Pandas Series as the input data.
+* Multiple log levels.
+* Auto GPU detection (via Torch).
+* List all available models, with descriptions, by calling `forecastga.print_model_info()`.
+* Google API info can be passed in the `data` dict or uploaded as a JSON file named `identity.json`.
+* Created a companion Google Colab notebook to easily run on GPU.
+* A handy plot function for Colab, `forecastga.plot_colab(forecast_in, title="Insample FOrecast", dark_mode=True)` that formats nicely and also handles Dark Mode!
 
 To use:
 
@@ -80,3 +94,5 @@ The goal of this repo is to grow the list of available models to test.  If you w
 3. Edit the `/src/forecastga/models/__init__.py` file to add your model's information.  Follow the format of the other entries.  Forecastga relies on `loc` to find the model and `class` to find the class to use.
 4. Edit `requirments.txt` with any additional libraries needed to run your model.  Keep in mind that this repo should support GPU training if available and some libraries have separate GPU-enabled versions.
 5. Issue a pull request.
+
+If you enjoyed this tool consider buying me some beer at: [Paypalme](https://www.paypal.com/paypalme/codeseo)
