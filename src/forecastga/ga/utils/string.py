@@ -12,16 +12,16 @@ def format(string, **kwargs):
     return textwrap.dedent(string).format(**kwargs).strip()
 
 
-def affix(prefix, base, suffix, connector="_"):
+def affix(prefix, base, suffix, connector='_'):
     if prefix:
         prefix = prefix + connector
     else:
-        prefix = ""
+        prefix = ''
 
     if suffix:
         suffix = connector + suffix
     else:
-        suffix = ""
+        suffix = ''
 
     return prefix + base + suffix
 

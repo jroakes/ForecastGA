@@ -29,7 +29,7 @@ warnings.filterwarnings("ignore")
 _LOG = get_logger(__name__)
 
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 class ModelConfig:

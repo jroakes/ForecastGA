@@ -1,15 +1,16 @@
 # encoding: utf-8
 
-from forecastga import ga
+from copy import copy
+import forecastga.ga as ga
 
 
-class Blueprint:
+class Blueprint(object):
     def __init__(self, description):
         self.raw = description
-        self.scope = description.get("scope")
-        self.defaults = description.get("defaults")
-        self._identity = description.get("identity")
-        self._queries = description.get("queries")
+        self.scope = description.get('scope')
+        self.defaults = description.get('defaults')
+        self._identity = description.get('identity')
+        self._queries = description.get('queries')
 
     @property
     def identity(self):
@@ -17,7 +18,7 @@ class Blueprint:
         if data:
             if isinstance(data, ga.utils.basestring):
                 return dict(identity=data)
-            if isinstance(data, dict):
+            elif isinstance(data, dict):
                 return data
 
         return None
