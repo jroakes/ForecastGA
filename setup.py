@@ -20,7 +20,7 @@ setup(
     license="MIT",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    requires_python='>=3.6.0',
+    requires_python=">=3.6.0",
     install_requires=install_requires,
     include_package_data=True,
     zip_safe=False,

@@ -15,7 +15,7 @@ from nbeats_pytorch.model import (
 )
 
 
-from forecastga.models.base  import BaseModel
+from forecastga.models.base import BaseModel
 
 from forecastga.helpers.data import data_generator
 
@@ -28,7 +28,7 @@ class NBEATS_Model(BaseModel):
 
     def __init__(self, config):
         super().__init__(config)
-        
+
     def train(self, **kwargs):
         """Train NBEATS Model"""
 

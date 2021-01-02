@@ -75,24 +75,25 @@ class ModelConfig:
         self.periods = select_seasonality(self.train_df, "periodocity")
 
 
-
 class AutomatedModel:
-
-    def __init__(self,
-                data,
-                model_list: list = [],
-                seasonality: str = "infer_from_data",
-                train_proportion: float = 0.75,
-                forecast_len: int = 20,
-                GPU: bool = torch.cuda.is_available()
-                ):
+    def __init__(
+        self,
+        data,
+        model_list: list = [],
+        seasonality: str = "infer_from_data",
+        train_proportion: float = 0.75,
+        forecast_len: int = 20,
+        GPU: bool = torch.cuda.is_available(),
+    ):
 
         if isinstance(data, dict):
             self.df = get_ga_data(data)
         elif isinstance(data, pd.Series):
             self.df = data
         else:
-            raise AttributeError('First parameter must be a dict with GA property and time data, or a pandas series.')
+            raise AttributeError(
+                "First parameter must be a dict with GA property and time data, or a pandas series."
+            )
         self.model_list = model_list
         self.seasonality = seasonality
         self.train_proportion = train_proportion
@@ -115,7 +116,9 @@ class AutomatedModel:
 
         self.models_dict = self.__train_models(**kwargs)
         self.forecast_dict = self.__forecast_models()
-        forecast_frame = self.forecast_dataframe(self.config.forecast_df, self.forecast_dict)
+        forecast_frame = self.forecast_dataframe(
+            self.config.forecast_df, self.forecast_dict
+        )
         preformance = self.insample_performance(forecast_frame)
 
         _LOG.info("Successfully finished in sample forecast")
@@ -142,7 +145,6 @@ class AutomatedModel:
         _LOG.info("Successfully finished out of sample forecast")
 
         return forecast_frame
-
 
     def available_models(self):
         return [k for k, v in MODELS.items() if v["status"] == "active"]

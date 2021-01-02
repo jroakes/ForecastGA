@@ -15,18 +15,18 @@ from forecastga.helpers.data import print_model_info
 from forecastga.helpers.colab import plot_colab
 
 
-
 def help():
-    print('Welcome to ForecastGA')
+    print("Welcome to ForecastGA")
     print()
     print("To use:")
     print()
-    print('Find Model Info:')
-    print('forecastga.print_model_info()')
+    print("Find Model Info:")
+    print("forecastga.print_model_info()")
     print()
-    print('Initialize Model:')
+    print("Initialize Model:")
     print()
-    print("""
+    print(
+        """
     Google Analytics:
 
         data = { 'client_id': '<google api client_id>',
@@ -44,9 +44,10 @@ def help():
         am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 
          """
-         )
+    )
     print()
-    print("""
+    print(
+        """
     Pandas DataFrame:
 
         data = pd.read_csv('ts.csv').sessions
@@ -55,16 +56,20 @@ def help():
         am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 
          """
-         )
+    )
     print()
-    print('Forecast Insample:')
-    print('forecast_in, performance = am.forecast_insample()')
+    print("Forecast Insample:")
+    print("forecast_in, performance = am.forecast_insample()")
     print()
-    print('Forecast Outsample:')
-    print('forecast_out = am.forecast_outsample()')
+    print("Forecast Outsample:")
+    print("forecast_out = am.forecast_outsample()")
     print()
-    print('Ensemble Performance:')
-    print('all_ensemble_in, all_ensemble_out, all_performance = am.ensemble(forecast_in, forecast_out)')
+    print("Ensemble Performance:")
+    print(
+        "all_ensemble_in, all_ensemble_out, all_performance = am.ensemble(forecast_in, forecast_out)"
+    )
     print()
-    print('Pretty Plot in Google Colab')
-    print('forecastga.plot_colab(forecast_in, title="Insample FOrecast", dark_mode=True)')
+    print("Pretty Plot in Google Colab")
+    print(
+        'forecastga.plot_colab(forecast_in, title="Insample FOrecast", dark_mode=True)'
+    )

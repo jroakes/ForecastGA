@@ -8,7 +8,7 @@ from tbats import TBATS
 
 from forecastga.helpers.data import get_unique_N, season_list
 
-from forecastga.models.base  import BaseModel
+from forecastga.models.base import BaseModel
 
 
 class TATS_Model(BaseModel):

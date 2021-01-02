@@ -6,7 +6,7 @@
 
 from tbats import TBATS
 
-from forecastga.models.base  import BaseModel
+from forecastga.models.base import BaseModel
 
 
 class TBATP1_Model(BaseModel):

@@ -9,7 +9,7 @@ from gluonts.model.deepar import DeepAREstimator
 from gluonts.trainer import Trainer
 from gluonts.dataset.common import ListDataset
 
-from forecastga.models.base  import BaseModel
+from forecastga.models.base import BaseModel
 
 
 class Gluonts_Model(BaseModel):
