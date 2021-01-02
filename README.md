@@ -1,6 +1,6 @@
 # ForecastGA: A Python tool to forecast GA data using several popular timeseries models.
 
-Google Colab Notebook: https://colab.research.google.com/drive/1CVj6ObeR9BeqJXDj4J1TrFBpHuQS8MwO
+Google Colab Notebook: https://colab.research.google.com/drive/1xwV1VuzdUd0uFQvQN01lf1uvT_u4Zrme?usp=sharing
 
 ## About
 
