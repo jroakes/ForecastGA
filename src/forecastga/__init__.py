@@ -35,7 +35,7 @@ def help():
                  'ga_metric': 'sessions',
                  'ga_segment': 'organic traffic',
                  'ga_start_date': '2018-01-01',
-                 'ga_url': 'https://analytics.google.com/analytics/web/?authuser=2#/report-home/a49839941w81675857p84563570',
+                 'ga_url': 'https://analytics.google.com/analytics/web/?authuser=2#/report-home/aXXXXXwXXXXXpXXXXXX',
                  'identity': '<google api identity>',
                  'omit_values_over': 2000000
                 }
