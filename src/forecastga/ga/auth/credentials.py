@@ -7,7 +7,6 @@ import httplib2
 import oauth2client
 import inspector
 
-from . import keyring
 from .. import utils
 
 
@@ -18,11 +17,6 @@ def from_params(**params):
             credentials[key] = value
     return credentials
 
-def from_keyring(identity=None, **params):
-    if identity:
-        return keyring.get(identity)
-    else:
-        return None
 
 def from_environment(prefix=None, suffix=None, **params):
     keys = {
@@ -55,13 +49,12 @@ def from_prompt(**params):
 class Credentials(object):
     STRATEGIES = {
         'params': from_params,
-        'keyring': from_keyring,
         'environment': from_environment,
         'prompt': from_prompt,
     }
 
-    INTERACTIVE_STRATEGIES = ['params', 'keyring', 'environment', 'prompt']
-    UNSUPERVISED_STRATEGIES = ['params', 'keyring', 'environment']
+    INTERACTIVE_STRATEGIES = ['params', 'environment', 'prompt']
+    UNSUPERVISED_STRATEGIES = ['params', 'environment']
 
     @classmethod
     def find(cls, interactive=False, valid=False, complete=False, **params):
@@ -207,7 +200,7 @@ def normalize(fn):
     @inspector.changes(fn)
     def normalized_fn(client_id=None, client_secret=None,
             access_token=None, refresh_token=None, identity=None):
-        
+
         if isinstance(client_id, Credentials):
             credentials = client_id
         else:

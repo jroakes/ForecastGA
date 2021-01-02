@@ -12,15 +12,14 @@ variables, it prompts for information when required and so on.
 """
 import re
 
-from . import keyring
 from . import oauth
 from .oauth import Flow, Credentials
 
 def navigate(accounts, account=None, webproperty=None, profile=None, ga_url=None, default_profile=True):
-     
+
     if ga_url:
         return get_profile_from_url(accounts, ga_url)
-        
+
     if webproperty and not account:
         raise KeyError("Cannot navigate to a webproperty or profile without knowing the account.")
     if profile and not (webproperty and account):
@@ -39,12 +38,12 @@ def navigate(accounts, account=None, webproperty=None, profile=None, ga_url=None
     else:
         return accounts
 
-    
+
 
 def get_profile_from_url(accounts, ga_url):
-        
+
   if isinstance(ga_url, str) and "https://analytics.google.com/" in ga_url:
-    
+
     psearch = re.search('^https:\/\/analytics\.google\.com\/analytics\/web\/.*\/a(?P<a>[0-9]+)w(?P<w>[0-9]+)p(?P<p>[0-9]+).*$', str(ga_url), re.IGNORECASE)
 
     if len(psearch.groups()) == 3:
@@ -58,12 +57,12 @@ def get_profile_from_url(accounts, ga_url):
 
   raise KeyError(error)
 
-    
+
 
 def get_profile(accounts, account, webproperty, profile):
 
   try:
-    
+
     account = accounts[account]
     webproperty = [w for w in account.webproperties if w.raw['internalWebPropertyId'] == webproperty][0]
     profile = webproperty.profiles[profile]
@@ -72,7 +71,7 @@ def get_profile(accounts, account, webproperty, profile):
 
   except Exception as e:
     print('Unknown Exception:', str(e))
-    return None    
+    return None
 
 
 def find(**kwargs):
@@ -132,7 +131,7 @@ def authenticate(
                 )
         else:
             raise KeyError("Cannot authenticate: enable interactive authorization, pass a token or use a service account.")
-    
+
     accounts = oauth.authenticate(credentials)
     scope = navigate(accounts, account=account, webproperty=webproperty, profile=profile, ga_url=ga_url)
     return scope
@@ -158,8 +157,6 @@ def authorize(client_id=None, client_secret=None, client_email=None, private_key
     else:
         credentials = base_credentials
 
-    if save:
-        keyring.set(credentials.identity, credentials.serialize())
 
     return credentials
 
@@ -176,7 +173,7 @@ def revoke(client_id, client_secret,
 
     if client_email and private_key:
         raise ValueError('Two-legged OAuth does not use revokable tokens.')
-    
+
     credentials = oauth.Credentials.find(
         complete=True,
         interactive=False,
@@ -190,5 +187,4 @@ def revoke(client_id, client_secret,
         )
 
     retval = credentials.revoke()
-    keyring.delete(credentials.identity)
     return retval

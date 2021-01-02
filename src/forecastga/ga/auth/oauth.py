@@ -38,7 +38,7 @@ def revoke(credentials):
 @normalize
 def authenticate(credentials):
     client = credentials.authorize()
-    service = discovery.build('analytics', 'v3', http=client)
+    service = discovery.build('analytics', 'v3', http=client, cache_discovery=False)
     raw_accounts = service.management().accounts().list().execute()['items']
     accounts = [account.Account(raw, service, credentials) for raw in raw_accounts]
     return addressable.List(accounts, indices=['id', 'name'], insensitive=True)

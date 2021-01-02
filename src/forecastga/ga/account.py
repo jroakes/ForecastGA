@@ -1,9 +1,6 @@
 # encoding: utf-8
 
-"""
-"""
-
-import functools
+"""Google Analytics Account"""
 
 import yaml
 import addressable
@@ -14,7 +11,7 @@ from . import columns
 from .columns import Column, Segment, ColumnList, SegmentList
 
 
-class Account(object):
+class Account:
     """
     An account is usually but not always associated with a single
     website. It will often contain multiple web properties
@@ -38,9 +35,9 @@ class Account(object):
         self.service = service
         self.credentials = credentials
         self.raw = raw
-        self.id = raw['id']
-        self.name = raw['name']
-        self.permissions = raw['permissions']['effective']
+        self.id = raw["id"]
+        self.name = raw["name"]
+        self.permissions = raw["permissions"]["effective"]
 
     @property
     @utils.memoize
@@ -57,10 +54,16 @@ class Account(object):
         ```
         """
 
-        raw_properties = self.service.management().webproperties().list(
-            accountId=self.id).execute()['items']
+        raw_properties = (
+            self.service.management()
+            .webproperties()
+            .list(accountId=self.id)
+            .execute()["items"]
+        )
         _webproperties = [WebProperty(raw, self) for raw in raw_properties]
-        return addressable.List(_webproperties, indices=['id', 'name'], insensitive=True)
+        return addressable.List(
+            _webproperties, indices=["id", "name"], insensitive=True
+        )
 
     @property
     def query(self, *vargs, **kwargs):
@@ -69,10 +72,11 @@ class Account(object):
 
     def __repr__(self):
         return "<googleanalytics.account.Account object: {} ({})>".format(
-            self.name, self.id)
+            self.name, self.id
+        )
 
 
-class WebProperty(object):
+class WebProperty:
     """
     A web property is a particular website you're tracking in Google Analytics.
     It has one or more profiles, and you will need to pick one from which to
@@ -82,15 +86,15 @@ class WebProperty(object):
     def __init__(self, raw, account):
         self.account = account
         self.raw = raw
-        self.id = raw['id']
-        self.name = raw['name']
+        self.id = raw["id"]
+        self.name = raw["name"]
         # on rare occassions, e.g. for abandoned web properties,
         # a website url might not be present
-        self.url = raw.get('websiteUrl')
+        self.url = raw.get("websiteUrl")
 
     @property
     def profile(self):
-        default = self.raw['defaultProfileId']
+        default = self.raw["defaultProfileId"]
         return self.profiles[default]
 
     @property
@@ -107,11 +111,14 @@ class WebProperty(object):
         property.profiles['marketing profile']
         ```
         """
-        raw_profiles = self.account.service.management().profiles().list(
-            accountId=self.account.id,
-            webPropertyId=self.id).execute()['items']
+        raw_profiles = (
+            self.account.service.management()
+            .profiles()
+            .list(accountId=self.account.id, webPropertyId=self.id)
+            .execute()["items"]
+        )
         profiles = [Profile(raw, self) for raw in raw_profiles]
-        return addressable.List(profiles, indices=['id', 'name'], insensitive=True)
+        return addressable.List(profiles, indices=["id", "name"], insensitive=True)
 
     def query(self, *vargs, **kwargs):
         """
@@ -121,10 +128,11 @@ class WebProperty(object):
 
     def __repr__(self):
         return "<googleanalytics.account.WebProperty object: {} ({})>".format(
-            self.name, self.id)
+            self.name, self.id
+        )
 
 
-class Profile(object):
+class Profile:
     """
     A profile is a particular analytics configuration of a web property.
     Each profile belongs to a web property and an account. As all
@@ -140,35 +148,36 @@ class Profile(object):
         self.raw = raw
         self.webproperty = webproperty
         self.account = webproperty.account
-        self.id = raw['id']
-        self.name = raw['name']
+        self.id = raw["id"]
+        self.name = raw["name"]
         self.core = CoreReportingAPI(self)
         self.realtime = RealTimeReportingAPI(self)
 
     def __repr__(self):
         return "<googleanalytics.account.Profile object: {} ({})>".format(
-            self.name, self.id)
+            self.name, self.id
+        )
 
 
-class ReportingAPI(object):
+class ReportingAPI:
     REPORT_TYPES = {
-        'ga': 'ga',
-        'realtime': 'rt',
+        "ga": "ga",
+        "realtime": "rt",
     }
 
     QUERY_TYPES = {
-        'ga': query.CoreQuery,
-        'realtime': query.RealTimeQuery,
+        "ga": query.CoreQuery,
+        "realtime": query.RealTimeQuery,
     }
 
     def __init__(self, endpoint, profile):
         """
         Endpoint can be one of `ga` or `realtime`.
         """
-        
+
         # various shortcuts
         self.profile = profile
-        self.account = account = profile.account
+        self.account = profile.account
         self.service = service = profile.account.service
         root = service.data()
         self.endpoint_type = endpoint
@@ -176,8 +185,8 @@ class ReportingAPI(object):
 
         # query interface
         self.report_type = self.REPORT_TYPES[endpoint]
-        Query = self.QUERY_TYPES[endpoint]
-        self.query = Query(self)
+        query_class = self.QUERY_TYPES[endpoint]
+        self.query = query_class(self)
 
         # optional caching layer
         self.cache = None
@@ -185,10 +194,10 @@ class ReportingAPI(object):
     @property
     @utils.memoize
     def all_columns(self):
-        query = self.service.metadata().columns().list(
-            reportType=self.report_type
-            )
-        raw_columns = query.execute()['items']
+        query_service = (
+            self.service.metadata().columns().list(reportType=self.report_type)
+        )
+        raw_columns = query_service.execute()["items"]
         hydrated_columns = utils.flatten(map(Column.from_metadata, raw_columns))
         return ColumnList(hydrated_columns, unique=False)
 
@@ -200,8 +209,8 @@ class ReportingAPI(object):
     @property
     @utils.memoize
     def segments(self):
-        query = self.service.management().segments().list()
-        raw_segments = query.execute()['items']
+        query_service = self.service.management().segments().list()
+        raw_segments = query_service.execute()["items"]
         hydrated_segments = [Segment(raw, self) for raw in raw_segments]
         return SegmentList(hydrated_segments)
 
@@ -221,17 +230,17 @@ class ReportingAPI(object):
         raise NotImplementedError()
 
     def __repr__(self):
-        return '<googleanalytics.account.{} object>'.format(self.__class__.__name__)
+        return "<googleanalytics.account.{} object>".format(self.__class__.__name__)
 
 
 class CoreReportingAPI(ReportingAPI):
     def __init__(self, profile):
-        super(CoreReportingAPI, self).__init__('ga', profile)
+        super(CoreReportingAPI, self).__init__("ga", profile)
 
 
 class RealTimeReportingAPI(ReportingAPI):
     def __init__(self, profile):
-        super(RealTimeReportingAPI, self).__init__('realtime', profile)
+        super(RealTimeReportingAPI, self).__init__("realtime", profile)
 
     # in principle, we should be able to reuse everything from the ReportingAPI
     # base class, but the Real Time Reporting API is still in beta and some
@@ -239,6 +248,6 @@ class RealTimeReportingAPI(ReportingAPI):
     @property
     @utils.memoize
     def all_columns(self):
-        raw_columns = yaml.load(open(utils.here('realtime.yml')))
+        raw_columns = yaml.load(open(utils.here("realtime.yml")))
         hydrated_columns = utils.flatten(map(Column.from_metadata, raw_columns))
         return ColumnList(hydrated_columns)

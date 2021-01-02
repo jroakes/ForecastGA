@@ -5,16 +5,16 @@ import inspector
 
 
 class memoize:
-  def __init__(self, function):
-    self.function = function
-    self.memoized = {}
+    def __init__(self, function):
+        self.function = function
+        self.memoized = {}
 
-  def __call__(self, *args):
-    try:
-        return self.memoized[args]
-    except KeyError:
-        self.memoized[args] = self.function(*args)
-        return self.memoized[args]
+    def __call__(self, *args):
+        try:
+            return self.memoized[args]
+        except KeyError:
+            self.memoized[args] = self.function(*args)
+            return self.memoized[args]
 
 
 def vectorize(fn):
@@ -28,10 +28,10 @@ def vectorize(fn):
     @functools.wraps(fn)
     def vectorized_method(self, values, *vargs, **kwargs):
         wrap = not isinstance(values, (list, tuple))
-        should_unwrap = not kwargs.setdefault('wrap', False)
+        should_unwrap = not kwargs.setdefault("wrap", False)
         unwrap = wrap and should_unwrap
-        del kwargs['wrap']
-        
+        del kwargs["wrap"]
+
         if wrap:
             values = [values]
 

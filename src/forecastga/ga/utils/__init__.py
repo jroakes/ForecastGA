@@ -32,20 +32,20 @@ except ImportError:
 # return a path relative to the package root
 def here(*segments):
     current = os.path.dirname(__file__)
-    return os.path.realpath(os.path.join(current, '..', *segments))
+    return os.path.realpath(os.path.join(current, "..", *segments))
 
 
 # flatten nested lists
-def flatten(l):
-    return functools.reduce(operator.add, l)
+def flatten(nested_list):
+    return functools.reduce(operator.add, nested_list)
 
 
 # wrap scalars into a list
 def wrap(obj):
     if isinstance(obj, list):
         return obj
-    else:
-        return [obj]
+
+    return [obj]
 
 
 # substitute new dictionary keys
@@ -64,6 +64,7 @@ def translate(d, mapping):
 def whitelist(d, allowed):
     return {k: v for k, v in d.items() if k in allowed}
 
+
 # similar to whitelist, but ordered and returns only values, not keys
 def pick(obj, allowed):
     if isinstance(obj, dict):
@@ -81,8 +82,8 @@ def pick(obj, allowed):
 # test if an object is falsy or contains only falsy values
 def isempty(obj):
     if isinstance(obj, list):
-        return not len(list(filter(None, obj)))
-    elif isinstance(obj, dict):
-        return not len(obj)
-    else:
-        return not obj
+        return not len(list(filter(None, obj))) > 0
+    if isinstance(obj, dict):
+        return not len(obj) > 0
+
+    return not obj
