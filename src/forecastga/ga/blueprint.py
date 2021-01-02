@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-import forecastga.ga as ga
+from forecastga import ga
 
 
 class Blueprint:
