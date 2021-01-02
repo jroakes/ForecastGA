@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from copy import copy
-import forecastga.ga as ga
+from forecastga import ga as ga
 
 
 class Blueprint(object):
