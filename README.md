@@ -7,7 +7,7 @@
 To use:
 
 #### Find Model Info:
-`forecastga.print_model_info()``
+`forecastga.print_model_info()`
 
 #### Initialize Model:
 
@@ -16,12 +16,12 @@ To use:
 ```
 data = { 'client_id': '<google api client_id>',
          'client_secret': '<google api client_secret>',
+         'identity': '<google api identity>',
+         'ga_start_date': '2018-01-01',
          'ga_end_date': '2019-12-31',
          'ga_metric': 'sessions',
          'ga_segment': 'organic traffic',
-         'ga_start_date': '2018-01-01',
-         'ga_url': 'https://analytics.google.com/analytics/web/?authuser=2#/report-home/a49839941w81675857p84563570',
-         'identity': '<google api identity>',
+         'ga_url': 'https://analytics.google.com/analytics/web/?authuser=2#/report-home/aXXXXXwXXXXXpXXXXXX',
          'omit_values_over': 2000000
         }
 
@@ -41,16 +41,16 @@ am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 
 
 #### Forecast Insample:
-`forecast_in, performance = am.forecast_insample()``
+`forecast_in, performance = am.forecast_insample()`
 
 #### Forecast Outsample:
-`forecast_out = am.forecast_outsample()``
+`forecast_out = am.forecast_outsample()`
 
 #### Ensemble Performance:
-`all_ensemble_in, all_ensemble_out, all_performance = am.ensemble(forecast_in, forecast_out)``
+`all_ensemble_in, all_ensemble_out, all_performance = am.ensemble(forecast_in, forecast_out)`
 
 #### Pretty Plot in Google Colab
-`forecastga.plot_colab(forecast_in, title="Insample FOrecast", dark_mode=True)``
+`forecastga.plot_colab(forecast_in, title="Insample FOrecast", dark_mode=True)`
 
 
 # Installation
