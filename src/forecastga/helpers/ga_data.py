@@ -5,6 +5,7 @@
 
 import os
 from types import SimpleNamespace
+from datetime import datetime
 import pandas as pd
 
 from forecastga.helpers.logging import get_logger
@@ -45,6 +46,9 @@ def load_profile(ga_url, identify_ns):
     except Exception as e:
         _LOG.error('An error occured: ' + str(e))
         return None
+
+def p_date(_dt):
+  return datetime.strftime(_dt, '%Y-%m-%d')
 
 
 def get_ga_data(data):
