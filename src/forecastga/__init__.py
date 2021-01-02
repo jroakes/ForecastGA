@@ -21,6 +21,7 @@ from forecastga.ensembles import (
     ensemble_doubled,
 )
 from forecastga.models import MODELS
+from forecastga.helpers.ga_data import get_ga_data
 
 pd.plotting.register_matplotlib_converters()
 warnings.filterwarnings("ignore")
@@ -81,15 +82,18 @@ class ModelConfig:
 class AutomatedModel:
 
     def __init__(self,
-                df: pd.Series,
-                model_list: list,
+                data,
+                model_list: list = [],
                 seasonality: str = "infer_from_data",
                 train_proportion: float = 0.75,
                 forecast_len: int = 20,
                 GPU: bool = torch.cuda.is_available()
                 ):
 
-        self.df = df
+        if isinstance(data, dict):
+            self.df = get_ga_data(data)
+        else:
+            self.df = data
         self.model_list = model_list
         self.seasonality = seasonality
         self.train_proportion = train_proportion
@@ -140,8 +144,6 @@ class AutomatedModel:
 
         return forecast_frame
 
-    def print_model_info(self):
-        _ = [print(v['name'], ":", v['description']) for k, v in MODELS.items() if v["status"] == "active"]
 
     def available_models(self):
         return [k for k, v in MODELS.items() if v["status"] == "active"]
