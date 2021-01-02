@@ -70,3 +70,12 @@ This repo support GPU training. Below are a few libraries that may have to be ma
 
 1. Majority of forecasting code taken from https://github.com/firmai/atspy and refactored heavily.
 1. Google Analytics based off of: https://github.com/debrouwere/google-analytics
+
+## Contribute
+The goal of this repo is to grow the list of available models to test.  If you would like to contribute one please read on.  Feel free to have fun naming your models.
+
+1. Fork the repo.
+2. In the `/src/forecastga/models` folder there is a model called `template.py`.  You can use this as a template for creating your new model.  All available variables are there. Forecastga ensures each model has the right data and calls only the `train` and `forecast` methods for each model. Feel free to add additional methods that your model requires.
+3. Edit the `/src/forecastga/models/__init__.py` file to add your model's information.  Follow the format of the other entries.  Forecastga relies on `loc` to find the model and `class` to find the class to use.
+4. Edit `requirments.txt` with any additional libraries needed to run your model.  Keep in mind that this repo should support GPU training if available and some libraries have separate GPU-enabled versions.
+5. Issue a pull request.

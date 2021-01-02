@@ -34,4 +34,4 @@ torch
 tqdm
 tsfresh
 werkzeug
-mxnet
+mxnet-cu101
