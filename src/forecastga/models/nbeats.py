@@ -40,10 +40,15 @@ class NBEATS_Model(BaseModel):
         patience = kwargs.get("patience", 5)
         device = self.get_device()
 
+        # There seems to be an issue with
         net = NBeatsNet(
-            stack_types=[NBeatsNet.GENERIC_BLOCK, NBeatsNet.GENERIC_BLOCK],
+            stack_types=[
+                NBeatsNet.TREND_BLOCK,
+                NBeatsNet.SEASONALITY_BLOCK,
+                NBeatsNet.GENERIC_BLOCK,
+            ],
             forecast_length=self.forecast_len,
-            thetas_dims=kwargs.get("thetas_dims", [7, 8]),
+            thetas_dims=kwargs.get("thetas_dims", [2, 8, 3]),
             nb_blocks_per_stack=kwargs.get("nb_blocks_per_stack", 3),
             backcast_length=self.forecast_len,
             hidden_layer_units=kwargs.get("hidden_layer_units", 128),
@@ -114,9 +119,9 @@ class NBEATS_Model(BaseModel):
         x_batch, y_batch = [], []
 
         # Batches the results into x_train_batch: x and y_train_batch: x + forecast_length
-        for i in range(backcast_length + 1, len(df) - forecast_length + 1):
-            x_batch.append(df[i - backcast_length : i])
-            y_batch.append(df[i : i + forecast_length])
+        for i in range(backcast_length + 1, len(x) - forecast_length + 1):
+            x_batch.append(x[i - backcast_length : i])
+            y_batch.append(x[i : i + forecast_length])
 
         x_batch = np.array(x_batch)[..., 0]
         y_batch = np.array(y_batch)[..., 0]
