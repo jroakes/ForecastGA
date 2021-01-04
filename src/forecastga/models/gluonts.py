@@ -20,6 +20,8 @@ class Gluonts_Model(BaseModel):
 
     def train(self, **kwargs):
 
+        epochs = kwargs.get('epochs', 10)
+
         # Adjust class freq.
         self.freq = pd.infer_freq(self.train_df.index)
         if self.freq == "MS":
@@ -28,7 +30,7 @@ class Gluonts_Model(BaseModel):
         estimator = DeepAREstimator(
             freq=self.freq,
             prediction_length=self.forecast_len,
-            trainer=Trainer(epochs=10, batch_size=64, ctx="gpu" if self.GPU else "cpu"),
+            trainer=Trainer(epochs=epochs, batch_size=64, ctx="gpu" if self.GPU else "cpu"),
         )
 
         self.model = estimator.train(

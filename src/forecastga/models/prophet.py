@@ -18,10 +18,14 @@ class Prophet_Model(BaseModel):
 
     def train(self, **kwargs):
 
+        country_holidays = kwargs.get('country_holidays', 'US')
+
         if self.freq == "D":
-            ptm = Prophet(daily_seasonality=True)
+            ptm = Prophet(weekly_seasonality=True)
         else:
             ptm = Prophet()
+
+        ptm.add_country_holidays(country_name=country_holidays)
 
         self.model = ptm.fit(self.format_input(self.train_df))
 
