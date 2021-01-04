@@ -49,7 +49,7 @@ MODELS = {
     "NBEATS": {
         "name": "NBEATS",
         "description": "Neural basis expansion analysis (now fixed at 20 Epochs)",
-        "loc": "forecastga.models.arima",
+        "loc": "forecastga.models.nbeats",
         "class": "NBEATS_Model",
         "status": "active",
     },
