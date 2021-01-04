@@ -63,7 +63,11 @@ am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 ##### Pandas DataFrame:
 
 ```
-data = pd.read_csv('ts.csv').sessions
+# CSV with columns: Date and Sessions
+df = pd.read_csv('ga_sessions.csv')
+df.Date = pd.to_datetime(df.Date)
+df = df.set_index("Date")
+data = df.Sessions
 
 model_list = ["TATS", "TBATS1", "TBATP1", "TBATS2", "ARIMA"]
 am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
@@ -79,7 +83,7 @@ am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 `all_ensemble_in, all_ensemble_out, all_performance = am.ensemble(forecast_in, forecast_out)`
 
 #### Pretty Plot in Google Colab
-`forecastga.plot_colab(forecast_in, title="Insample FOrecast", dark_mode=True)`
+`forecastga.plot_colab(forecast_in, title="Insample Forecast", dark_mode=True)`
 
 
 # Installation
