@@ -39,23 +39,28 @@ class Gluonts_Model(BaseModel):
 
         if self.in_sample:
             forecast = self.model.predict(
-                self.format_input(self.forecast_df, self.freq)
+                self.format_input(self.dataframe['Target'],
+                                  self.freq,
+                                  self.train_df.index[-1]
+                                  + self.train_df.index.to_series().diff().min(),
+                                  )
             )
         else:
             forecast = self.model.predict(
                 self.format_input(
-                    self.train_df.tail(self.forecast_len),
+                    self.dataframe['Target'],
                     self.freq,
-                    self.train_df.index[-1]
+                    self.dataframe['Target'].index[-1]
                     + self.train_df.index.to_series().diff().min(),
                 )
             )
 
         self.prediction = list(forecast)[0].samples.mean(axis=0)  # .quantile(0.5)
 
-    @staticmethod
-    def format_input(df, freq, start=None):
-        if start:
-            return ListDataset([{"start": start, "target": df.values}], freq=freq)
 
-        return ListDataset([{"start": df.index[0], "target": df.values}], freq=freq)
+    @staticmethod
+    def format_input(df, freq, target=None):
+        if target:
+            return ListDataset([{"start": df.index[0], "target": df.to_frame().Target[:target]}], freq=freq)
+
+        return ListDataset([{"start": df.index[0], "target": df.to_frame().Target}], freq=freq)
