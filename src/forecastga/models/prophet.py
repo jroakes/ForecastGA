@@ -18,7 +18,7 @@ class Prophet_Model(BaseModel):
 
     def train(self, **kwargs):
 
-        country_holidays = kwargs.get('country_holidays', 'US')
+        country_holidays = kwargs.get("country_holidays", "US")
 
         if self.freq == "D":
             ptm = Prophet(weekly_seasonality=True)

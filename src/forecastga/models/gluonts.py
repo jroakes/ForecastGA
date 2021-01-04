@@ -20,7 +20,7 @@ class Gluonts_Model(BaseModel):
 
     def train(self, **kwargs):
 
-        epochs = kwargs.get('epochs', 10)
+        epochs = kwargs.get("epochs", 10)
 
         # Adjust class freq.
         self.freq = pd.infer_freq(self.train_df.index)
@@ -30,7 +30,9 @@ class Gluonts_Model(BaseModel):
         estimator = DeepAREstimator(
             freq=self.freq,
             prediction_length=self.forecast_len,
-            trainer=Trainer(epochs=epochs, batch_size=64, ctx="gpu" if self.GPU else "cpu"),
+            trainer=Trainer(
+                epochs=epochs, batch_size=64, ctx="gpu" if self.GPU else "cpu"
+            ),
         )
 
         self.model = estimator.train(
@@ -41,28 +43,33 @@ class Gluonts_Model(BaseModel):
 
         if self.in_sample:
             forecast = self.model.predict(
-                self.format_input(self.dataframe['Target'],
-                                  self.freq,
-                                  self.train_df.index[-1]
-                                  + self.train_df.index.to_series().diff().min(),
-                                  )
+                self.format_input(
+                    self.dataframe["Target"],
+                    self.freq,
+                    self.train_df.index[-1]
+                    + self.train_df.index.to_series().diff().min(),
+                )
             )
         else:
             forecast = self.model.predict(
                 self.format_input(
-                    self.dataframe['Target'],
+                    self.dataframe["Target"],
                     self.freq,
-                    self.dataframe['Target'].index[-1]
+                    self.dataframe["Target"].index[-1]
                     + self.train_df.index.to_series().diff().min(),
                 )
             )
 
         self.prediction = list(forecast)[0].samples.mean(axis=0)  # .quantile(0.5)
 
-
     @staticmethod
     def format_input(df, freq, target=None):
         if target:
-            return ListDataset([{"start": df.index[0], "target": df.to_frame().Target[:target]}], freq=freq)
+            return ListDataset(
+                [{"start": df.index[0], "target": df.to_frame().Target[:target]}],
+                freq=freq,
+            )
 
-        return ListDataset([{"start": df.index[0], "target": df.to_frame().Target}], freq=freq)
+        return ListDataset(
+            [{"start": df.index[0], "target": df.to_frame().Target}], freq=freq
+        )

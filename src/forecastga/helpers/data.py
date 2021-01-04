@@ -183,7 +183,9 @@ def parse_data(df):
 
 def train_test_split(df, forecast_len=30):
 
-    train, test = tts(df["Target"], test_size=forecast_len, shuffle=False, stratify=None)
+    train, test = tts(
+        df["Target"], test_size=forecast_len, shuffle=False, stratify=None
+    )
     _LOG.info(
         "An insample split of training size {} and testing size {} has been constructed".format(
             len(train), len(test)

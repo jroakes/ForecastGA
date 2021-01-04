@@ -41,13 +41,9 @@ class NBEATS_Model(BaseModel):
         device = self.get_device()
 
         net = NBeatsNet(
-            stack_types=[
-                NBeatsNet.TREND_BLOCK,
-                NBeatsNet.SEASONALITY_BLOCK,
-                NBeatsNet.GENERIC_BLOCK,
-            ],
+            stack_types=[NBeatsNet.GENERIC_BLOCK, NBeatsNet.GENERIC_BLOCK],
             forecast_length=self.forecast_len,
-            thetas_dims=kwargs.get("thetas_dims", [2, 8, 3]),
+            thetas_dims=kwargs.get("thetas_dims", [7, 8]),
             nb_blocks_per_stack=kwargs.get("nb_blocks_per_stack", 3),
             backcast_length=self.forecast_len,
             hidden_layer_units=kwargs.get("hidden_layer_units", 128),
