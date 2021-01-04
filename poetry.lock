@@ -1581,7 +1581,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "c1502f4103f0ace8c477520372e3f148ceb608ae4f9ca97773304195a0442a8f"
+content-hash = "a784b7b789f2e291f48103c9d3bce51cced9d7486f3e935e485aab54e3b43504"
 
 [metadata.files]
 addressable = [
