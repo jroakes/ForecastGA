@@ -22,17 +22,17 @@ ForecastGA is a tool that combines a couple of popular libraries, [Atspy](https:
 * A handy plot function for Colab, `forecastga.plot_colab(forecast_in, title="Insample Forecast", dark_mode=True)` that formats nicely and also handles Dark Mode!
 
 ### Models Available
-* ARIMA : Automated ARIMA Modelling
-* Prophet : Modeling Multiple Seasonality With Linear or Non-linear Growth
-* HWAAS : Exponential Smoothing With Additive Trend and Additive Seasonality
-* HWAMS : Exponential Smoothing with Additive Trend and Multiplicative Seasonality
-* NBEATS : Neural basis expansion analysis (now fixed at 20 Epochs)
-* Gluonts : RNN-based Model (now fixed at 20 Epochs)
-* TATS : Seasonal and Trend no Box Cox
-* TBAT : Trend and Box Cox
-* TBATS1 : Trend, Seasonal (one), and Box Cox
-* TBATP1 : TBATS1 but Seasonal Inference is Hardcoded by Periodicity
-* TBATS2 : TBATS1 With Two Seasonal Periods
+* `ARIMA` : Automated ARIMA Modelling
+* `Prophet` : Modeling Multiple Seasonality With Linear or Non-linear Growth
+* `HWAAS` : Exponential Smoothing With Additive Trend and Additive Seasonality
+* `HWAMS` : Exponential Smoothing with Additive Trend and Multiplicative Seasonality
+* `NBEATS` : Neural basis expansion analysis (now fixed at 20 Epochs)
+* `Gluonts` : RNN-based Model (now fixed at 20 Epochs)
+* `TATS` : Seasonal and Trend no Box Cox
+* `TBAT` : Trend and Box Cox
+* `TBATS1` : Trend, Seasonal (one), and Box Cox
+* `TBATP1` : TBATS1 but Seasonal Inference is Hardcoded by Periodicity
+* `TBATS2` : TBATS1 With Two Seasonal Periods
 
 
 ### How To Use
