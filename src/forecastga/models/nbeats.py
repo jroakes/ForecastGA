@@ -10,6 +10,7 @@ import numpy as np
 import torch
 from torch import optim
 from torch.nn import functional as F
+from tqdm.auto import tqdm
 from nbeats_pytorch.model import (
     NBeatsNet,
 )
@@ -71,7 +72,7 @@ class NBEATS_Model(BaseModel):
         best_loss = float("inf")
         counter = 0
 
-        for _ in range(steps):
+        for _ in tqdm(range(steps)):
             loss = self.train_100_grad_steps(data, device, net, optimiser)
             if loss < best_loss:
                 best_loss, counter = loss, 0
