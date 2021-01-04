@@ -28,7 +28,7 @@ class Gluonts_Model(BaseModel):
         estimator = DeepAREstimator(
             freq=self.freq,
             prediction_length=self.forecast_len,
-            trainer=Trainer(epochs=6, ctx="gpu" if self.GPU else "cpu"),
+            trainer=Trainer(epochs=10, batch_size=64, ctx="gpu" if self.GPU else "cpu"),
         )
 
         self.model = estimator.train(
