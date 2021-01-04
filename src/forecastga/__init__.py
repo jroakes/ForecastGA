@@ -6,7 +6,7 @@
 """
 
 
-__version__ = "0.1.8"
+__version__ = "0.1.8-alpha"
 
 
 from forecastga.helpers.ga_data import get_ga_data

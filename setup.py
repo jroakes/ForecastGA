@@ -10,7 +10,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="forecastga",
-    version="0.1.8",
+    version="0.1.8-alpha",
     description="Automated Google Analytics Time Series in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
