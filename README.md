@@ -19,9 +19,23 @@ ForecastGA is a tool that combines a couple of popular libraries, [Atspy](https:
 * List all available models, with descriptions, by calling `forecastga.print_model_info()`.
 * Google API info can be passed in the `data` dict or uploaded as a JSON file named `identity.json`.
 * Created a companion Google Colab notebook to easily run on GPU.
-* A handy plot function for Colab, `forecastga.plot_colab(forecast_in, title="Insample FOrecast", dark_mode=True)` that formats nicely and also handles Dark Mode!
+* A handy plot function for Colab, `forecastga.plot_colab(forecast_in, title="Insample Forecast", dark_mode=True)` that formats nicely and also handles Dark Mode!
 
-To use:
+### Models Available
+* ARIMA : Automated ARIMA Modelling
+* Prophet : Modeling Multiple Seasonality With Linear or Non-linear Growth
+* HWAAS : Exponential Smoothing With Additive Trend and Additive Seasonality
+* HWAMS : Exponential Smoothing with Additive Trend and Multiplicative Seasonality
+* NBEATS : Neural basis expansion analysis (now fixed at 20 Epochs)
+* Gluonts : RNN-based Model (now fixed at 20 Epochs)
+* TATS : Seasonal and Trend no Box Cox
+* TBAT : Trend and Box Cox
+* TBATS1 : Trend, Seasonal (one), and Box Cox
+* TBATP1 : TBATS1 but Seasonal Inference is Hardcoded by Periodicity
+* TBATS2 : TBATS1 With Two Seasonal Periods
+
+
+### How To Use
 
 #### Find Model Info:
 `forecastga.print_model_info()`
@@ -71,14 +85,17 @@ am = forecastga.AutomatedModel(data , model_list=model_list, forecast_len=30 )
 # Installation
 Windows users may need to manually install the two items below via conda :
 1. `conda install pystan`
-1. `conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch`
+1. `conda install pytorch -c pytorch`
 1. `!pip install --upgrade git+https://github.com/jroakes/ForecastGA.git`
 
 otherwise,
-`!pip install --upgrade git+https://github.com/jroakes/ForecastGA.git`
+`pip install --upgrade forecastga`
 
 This repo support GPU training. Below are a few libraries that may have to be manually installed to support.
-`pip install --upgrade mxnet-cu101==1.7.0`
+```
+pip install --upgrade mxnet-cu101
+pip install --upgrade torch 1.7.0+cu101
+```
 
 
 ## Acknowledgements
