@@ -59,7 +59,7 @@ class NBEATS_Model(BaseModel):
             self.dataframe, self.forecast_len
         )
 
-        c = len(x_batch) -
+        c = len(x_batch)
         if self.in_sample:
             c -= self.forecast_len
 
@@ -73,7 +73,7 @@ class NBEATS_Model(BaseModel):
         for _ in range(steps):
             loss = self.train_100_grad_steps(data, device, net, optimiser)
             if loss < best_loss:
-                best_loss = loss
+                best_loss, counter = loss, 0
             else:
                 counter += 1
                 if counter >= patience:
@@ -89,7 +89,7 @@ class NBEATS_Model(BaseModel):
             self.dataframe, self.forecast_len, constant=self.constant
         )
 
-        c = len(x_batch) -
+        c = len(x_batch)
         if self.in_sample:
             c -= self.forecast_len
 
