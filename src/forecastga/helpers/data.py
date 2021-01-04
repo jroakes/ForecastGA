@@ -181,10 +181,9 @@ def parse_data(df):
     return df, pd.infer_freq(df.index)
 
 
-def train_test_split(df, train_proportion=0.75):
+def train_test_split(df, forecast_len=30):
 
-    size = int(df["Target"].shape[0] * train_proportion)
-    train, test = tts(df["Target"], train_size=size, shuffle=False, stratify=None)
+    train, test = tts(df["Target"], test_size=forecast_len, shuffle=False, stratify=None)
     _LOG.info(
         "An insample split of training size {} and testing size {} has been constructed".format(
             len(train), len(test)

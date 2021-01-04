@@ -59,8 +59,9 @@ class NBEATS_Model(BaseModel):
             self.dataframe, self.forecast_len
         )
 
-        tp = self.train_proportion if self.in_sample else 1
-        c = int(len(x_batch) * tp)
+        c = len(x_batch) -
+        if self.in_sample:
+            c -= self.forecast_len
 
         optimiser = optim.Adam(net.parameters())
 
@@ -88,8 +89,9 @@ class NBEATS_Model(BaseModel):
             self.dataframe, self.forecast_len, constant=self.constant
         )
 
-        tp = self.train_proportion if self.in_sample else 1
-        c = int(len(x_batch) * tp)
+        c = len(x_batch) -
+        if self.in_sample:
+            c -= self.forecast_len
 
         self.model.eval()
 

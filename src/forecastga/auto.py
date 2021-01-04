@@ -35,14 +35,12 @@ class ModelConfig:
         df: pd.Series,
         seasonality: str = "infer_from_data",
         forecast_len: int = 20,
-        train_proportion: float = 0.75,
         GPU: bool = torch.cuda.is_available(),
     ):
 
         self.df = df
         self.seasonality = seasonality
         self.forecast_len = forecast_len
-        self.train_proportion = train_proportion
         self.GPU = GPU
 
         self.in_sample = None
@@ -58,7 +56,7 @@ class ModelConfig:
         self.in_sample = True
 
         self.train_df, self.forecast_df = train_test_split(
-            self.dataframe, train_proportion=self.train_proportion
+            self.dataframe, forecast_len=self.forecast_len
         )
         self.forecast_len = len(self.forecast_df)
 
@@ -81,7 +79,6 @@ class AutomatedModel:
         data,
         model_list: list = [],
         seasonality: str = "infer_from_data",
-        train_proportion: float = 0.75,
         forecast_len: int = 20,
         GPU: bool = torch.cuda.is_available(),
     ):
@@ -96,7 +93,6 @@ class AutomatedModel:
             )
         self.model_list = model_list
         self.seasonality = seasonality
-        self.train_proportion = train_proportion
         self.forecast_len = forecast_len
         self.GPU = GPU
         self.models_dict = {}
@@ -106,7 +102,6 @@ class AutomatedModel:
             self.df,
             seasonality=seasonality,
             forecast_len=forecast_len,
-            train_proportion=train_proportion,
             GPU=GPU,
         )
 

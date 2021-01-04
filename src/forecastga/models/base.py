@@ -20,7 +20,6 @@ class BaseModel:
         self.seasonality = config.seasonality
         self.forecast_len = config.forecast_len
         self.freq = config.freq
-        self.train_proportion = config.train_proportion
         self.in_sample = config.in_sample
         self.GPU = config.GPU
 
