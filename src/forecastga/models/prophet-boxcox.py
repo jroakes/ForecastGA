@@ -12,7 +12,7 @@ from scipy.special import inv_boxcox
 from forecastga.models.base import BaseModel
 
 
-class Prophet_Model(BaseModel):
+class Prophet_BoxCox_Model(BaseModel):
     """Prophet Model Class"""
 
     def __init__(self, config):
