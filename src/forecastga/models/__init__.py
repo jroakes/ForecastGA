@@ -18,6 +18,13 @@ MODELS = {
         "class": "Prophet_Model",
         "status": "active",
     },
+    "ProphetBC": {
+        "name": "ProphetBC",
+        "description": "Prophet Model with Box-Cox transform of the data",
+        "loc": "forecastga.models.prophet_boxcox",
+        "class": "Prophet_BoxCox_Model",
+        "status": "active",
+    },
     "SARIMA": {
         "name": "SARIMA",
         "description": "A seasonal autoregressive integrated moving average (SARIMA) model",

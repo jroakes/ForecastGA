@@ -24,6 +24,7 @@ ForecastGA is a tool that combines a couple of popular libraries, [Atspy](https:
 ### Models Available
 * `ARIMA` : Automated ARIMA Modelling
 * `Prophet` : Modeling Multiple Seasonality With Linear or Non-linear Growth
+* `ProphetBC` : Prophet Model with Box-Cox transform of the data
 * `HWAAS` : Exponential Smoothing With Additive Trend and Additive Seasonality
 * `HWAMS` : Exponential Smoothing with Additive Trend and Multiplicative Seasonality
 * `NBEATS` : Neural basis expansion analysis (now fixed at 20 Epochs)
@@ -106,6 +107,7 @@ pip install --upgrade torch 1.7.0+cu101
 
 1. Majority of forecasting code taken from https://github.com/firmai/atspy and refactored heavily.
 1. Google Analytics based off of: https://github.com/debrouwere/google-analytics
+1. Thanks to [richardfergie](https://github.com/richardfergie) for the addition of the Prophet Box-Cox model to control negative predictions.
 
 ## Contribute
 The goal of this repo is to grow the list of available models to test.  If you would like to contribute one please read on.  Feel free to have fun naming your models.
