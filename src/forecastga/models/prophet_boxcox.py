@@ -6,7 +6,8 @@
 
 import pandas as pd
 from fbprophet import Prophet
-from scipy.special import boxcox, inv_boxcox
+from scipy.stats import boxcox
+from scipy.special import inv_boxcox
 
 from forecastga.models.base import BaseModel
 
