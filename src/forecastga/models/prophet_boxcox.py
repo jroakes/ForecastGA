@@ -31,7 +31,7 @@ class Prophet_BoxCox_Model(BaseModel):
         ptm.add_country_holidays(country_name=country_holidays)
 
         formatted_data = self.format_input(self.train_df)
-        transformed_y, self.boxcox_lambda = boxcox(formatted_data["y"]+1)
+        transformed_y, self.boxcox_lambda = boxcox(formatted_data["y"] + 1)
         formatted_data["y"] = transformed_y
 
         self.model = ptm.fit(formatted_data)
@@ -43,7 +43,9 @@ class Prophet_BoxCox_Model(BaseModel):
         future_pred = self.model.predict(future)
         future_pred = future_pred[-self.forecast_len :]
         if self.boxcox_lambda:
-            future_pred["yhat"] = inv_boxcox(future_pred["yhat"], self.boxcox_lambda) - 1
+            future_pred["yhat"] = (
+                inv_boxcox(future_pred["yhat"], self.boxcox_lambda) - 1
+            )
         self.prediction = self.format_output(future_pred)
 
     @staticmethod
