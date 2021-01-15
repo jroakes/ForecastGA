@@ -134,7 +134,7 @@ class AutomatedModel:
         )[1:]
 
         forecast_frame = self.forecast_dataframe(
-            pd.DataFrame({"Target": 0}, index=future_index), self.forecast_dict
+            pd.Series(0, name="Target", index=future_index), self.forecast_dict
         )
 
         _LOG.info("Successfully finished out of sample forecast")
