@@ -214,6 +214,12 @@ class AutomatedModel:
         return pd.DataFrame.from_dict(dict_perf)
 
     def ensemble(self, forecast_in, forecast_out):
+
+        # TODO: Need to move `freq` to global model config.
+        _LOG.error('Ensemble Not Final: Need to move `freq` to global model config.')
+        _LOG.error('Returning `None` values.')
+        return None, None, None
+
         season = self.seasonality
 
         _LOG.info("Building LightGBM Ensemble from TS data (ensemble_lgb)")
