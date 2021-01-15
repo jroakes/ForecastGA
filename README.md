@@ -3,6 +3,7 @@ A Python tool to forecast GA data using several popular timeseries models.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1nmcu37MY02dfMdUbinrwwg7gA9ya3eud?usp=sharing)
 
+![Logo for ForecastGA](https://repository-images.githubusercontent.com/325152404/637c0780-5713-11eb-9fc0-196d71fe0f6f)
 
 ## About
 
