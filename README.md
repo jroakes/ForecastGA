@@ -32,14 +32,15 @@ ForecastGA is a tool that combines a couple of popular libraries, [Atspy](https:
 * `Gluonts` : RNN-based Model (now fixed at 20 Epochs)
 * `TATS` : Seasonal and Trend no Box Cox
 * `TBAT` : Trend and Box Cox
-
+* `TBATS1` : Trend, Seasonal (one), and Box Cox
+* `TBATP1` : TBATS1 but Seasonal Inference is Hardcoded by Periodicity
+* `TBATS2` : TBATS1 With Two Seasonal Periods
 
 ### Models to be added
 * [Greykite](https://engineering.linkedin.com/blog/2021/greykite--a-flexible--intuitive--and-fast-forecasting-library)
 * [Kats](https://facebookresearch.github.io/Kats/)
-* `TBATS1` : Trend, Seasonal (one), and Box Cox
-* `TBATP1` : TBATS1 but Seasonal Inference is Hardcoded by Periodicity
-* `TBATS2` : TBATS1 With Two Seasonal Periods
+
+
 
 
 ### How To Use
